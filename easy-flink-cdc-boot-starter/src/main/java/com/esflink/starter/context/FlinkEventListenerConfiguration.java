@@ -20,7 +20,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -41,19 +40,12 @@ import java.util.List;
 public class FlinkEventListenerConfiguration implements ApplicationContextAware, InitializingBean, Ordered {
     @Autowired
     private FlinkProperties flinkProperties;
-    @Autowired
-    private FlinkPropertiesParser flinkPropertiesParser;
 
     private ApplicationContext applicationContext;
 
-    @Bean
-    public FlinkPropertiesParser flinkPropertiesParser() {
-        return new DefaultFlinkPropertiesParser();
-    }
-
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-
+        this.applicationContext = applicationContext;
     }
 
     @Override
@@ -61,6 +53,8 @@ public class FlinkEventListenerConfiguration implements ApplicationContextAware,
 
         ResourceLoader resourceLoader = new DefaultResourceLoader();
         Resource resource = resourceLoader.getResource(BaseEsConstants.CONFIG_FILE);
+
+        FlinkPropertiesParser flinkPropertiesParser = new DefaultFlinkPropertiesParser();
         List<FlinkProperties> flinkProperties = flinkPropertiesParser.getProperties(resource);
 
         // 创建 flink listener
@@ -92,7 +86,7 @@ public class FlinkEventListenerConfiguration implements ApplicationContextAware,
     private DebeziumSourceFunction<DataChangeInfo> buildDataChangeSource(FlinkProperties flinkProperties) {
         return MySqlSource.<DataChangeInfo>builder()
                 .hostname(flinkProperties.getHostname())
-                .port(flinkProperties.getPort())
+                .port(Integer.parseInt(flinkProperties.getPort()))
                 .databaseList(flinkProperties.getDatabaseList())
                 .tableList(flinkProperties.getTableList())
                 .username(flinkProperties.getUsername())

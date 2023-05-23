@@ -20,7 +20,7 @@ public class FlinkProperties {
 
     private String hostname;
 
-    private Integer port;
+    private String port;
 
     private String databaseList;
 
@@ -47,11 +47,11 @@ public class FlinkProperties {
         this.hostname = hostname;
     }
 
-    public Integer getPort() {
+    public String getPort() {
         return port;
     }
 
-    public void setPort(Integer port) {
+    public void setPort(String port) {
         this.port = port;
     }
 
@@ -88,67 +88,4 @@ public class FlinkProperties {
     }
 
 
-    public static final class FlinkPropertiesBuilder {
-        private String name;
-        private String hostname;
-        private Integer port;
-        private String databaseList;
-        private String tableList;
-        private String username;
-        private String password;
-
-        private FlinkPropertiesBuilder() {
-        }
-
-        public static FlinkPropertiesBuilder aFlinkProperties() {
-            return new FlinkPropertiesBuilder();
-        }
-
-        public FlinkPropertiesBuilder name(String name) {
-            this.name = name;
-            return this;
-        }
-
-        public FlinkPropertiesBuilder hostname(String hostname) {
-            this.hostname = hostname;
-            return this;
-        }
-
-        public FlinkPropertiesBuilder port(Integer port) {
-            this.port = port;
-            return this;
-        }
-
-        public FlinkPropertiesBuilder databaseList(String databaseList) {
-            this.databaseList = databaseList;
-            return this;
-        }
-
-        public FlinkPropertiesBuilder tableList(String tableList) {
-            this.tableList = tableList;
-            return this;
-        }
-
-        public FlinkPropertiesBuilder username(String username) {
-            this.username = username;
-            return this;
-        }
-
-        public FlinkPropertiesBuilder password(String password) {
-            this.password = password;
-            return this;
-        }
-
-        public FlinkProperties build() {
-            FlinkProperties flinkProperties = new FlinkProperties();
-            flinkProperties.setName(name);
-            flinkProperties.setHostname(hostname);
-            flinkProperties.setPort(port);
-            flinkProperties.setDatabaseList(databaseList);
-            flinkProperties.setTableList(tableList);
-            flinkProperties.setUsername(username);
-            flinkProperties.setPassword(password);
-            return flinkProperties;
-        }
-    }
 }
