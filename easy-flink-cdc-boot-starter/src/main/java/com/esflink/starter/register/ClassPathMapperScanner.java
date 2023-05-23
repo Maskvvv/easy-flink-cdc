@@ -28,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @since 2023/5/22 23:00
  */
 public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner implements ApplicationContextAware {
-    public static final Map<String, List<FlinkDataChangeSink>> SINK_MAP = new ConcurrentHashMap<>();
+
     private ApplicationContext applicationContext;
 
     public ClassPathMapperScanner(BeanDefinitionRegistry registry) {
@@ -65,8 +65,6 @@ public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner imple
         for (BeanDefinitionHolder holder : beanDefinitions) {
             definition = (GenericBeanDefinition) holder.getBeanDefinition();
             definition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
-
-            registerSink(holder.getBeanName());
         }
     }
 
@@ -74,16 +72,6 @@ public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner imple
     protected boolean isCandidateComponent(AnnotatedBeanDefinition beanDefinition) {
         AnnotationMetadata metadata = beanDefinition.getMetadata();
         return metadata.hasAnnotation(FlinkSink.class.getName());
-    }
-
-    private void registerSink(String beanName) {
-        FlinkDataChangeSink sink = (FlinkDataChangeSink) applicationContext.getBean(beanName);
-        FlinkSink flinkSink = sink.getClass().getAnnotation(FlinkSink.class);
-        String value = flinkSink.value();
-        List<FlinkDataChangeSink> sinkList = SINK_MAP.getOrDefault(value, new ArrayList<>());
-        sinkList.add(sink);
-
-        SINK_MAP.put(value, sinkList);
     }
 
     @Override

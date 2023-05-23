@@ -20,5 +20,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Import(FlinkScannerRegister.class)
 public @interface FlinkSink {
-    String value();
+    String value() default "";
 }
