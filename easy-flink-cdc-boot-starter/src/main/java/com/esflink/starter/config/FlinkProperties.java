@@ -1,8 +1,10 @@
 package com.esflink.starter.config;
 
 
+import com.esflink.starter.constants.BaseEsConstants;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * flink 数据库配置信息
@@ -10,8 +12,9 @@ import org.springframework.stereotype.Component;
  * @author zhouhongyin
  * @since 2023/3/5 22:28
  */
-@Component
-@ConfigurationProperties("flink")
+@Configuration
+@ConfigurationProperties(value = "easy-flink")
+@ConditionalOnProperty(name = BaseEsConstants.ENABLE_PREFIX, havingValue = "true", matchIfMissing = true)
 public class FlinkProperties {
     private String hostname;
 

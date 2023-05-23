@@ -1,3 +1,4 @@
 # Auto Configure
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.esflink.starter.context.FlinkSinkConfiguration
+  com.esflink.starter.context.FlinkSinkConfiguration,\
+  com.esflink.starter.context.FlinkEventListenerConfiguration

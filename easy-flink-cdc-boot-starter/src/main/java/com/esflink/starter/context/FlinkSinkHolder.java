@@ -17,14 +17,14 @@ public class FlinkSinkHolder {
 
     private static final Map<String, List<FlinkDataChangeSink>> SINK_MAP = new ConcurrentHashMap<>();
 
-    public void registerSink(FlinkDataChangeSink sink, FlinkSink flinkSink) {
+    public static void registerSink(FlinkDataChangeSink sink, FlinkSink flinkSink) {
         String value = flinkSink.value();
         List<FlinkDataChangeSink> sinkList = SINK_MAP.getOrDefault(value, new ArrayList<>());
         sinkList.add(sink);
         SINK_MAP.put(value, sinkList);
     }
 
-    public List<FlinkDataChangeSink> getSink(String listenerName) {
+    public static List<FlinkDataChangeSink> getSink(String listenerName) {
         return SINK_MAP.get(listenerName);
     }
 
