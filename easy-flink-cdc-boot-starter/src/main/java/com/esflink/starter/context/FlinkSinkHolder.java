@@ -19,29 +19,16 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author zhouhongyin
  * @since 2023/5/23 14:19
  */
-@Configuration
-public class FlinkSinkHolder implements BeanPostProcessor, Ordered {
+public class FlinkSinkHolder {
+    public static final String BEAN_NAME = "flinkSinkHolder";
+
     public static final Map<String, List<FlinkDataChangeSink>> SINK_MAP = new ConcurrentHashMap<>();
 
-    @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-
-        FlinkSink flinkSink = bean.getClass().getAnnotation(FlinkSink.class);
-        if (flinkSink != null) {
-            registerSink((FlinkDataChangeSink) bean, flinkSink);
-        }
-        return BeanPostProcessor.super.postProcessAfterInitialization(bean, beanName);
-    }
-
-    private void registerSink(FlinkDataChangeSink sink, FlinkSink flinkSink) {
+    public void registerSink(FlinkDataChangeSink sink, FlinkSink flinkSink) {
         String value = flinkSink.value();
         List<FlinkDataChangeSink> sinkList = SINK_MAP.getOrDefault(value, new ArrayList<>());
         sinkList.add(sink);
         SINK_MAP.put(value, sinkList);
     }
 
-    @Override
-    public int getOrder() {
-        return EasyFlinkOrdered.ORDER_SINK;
-    }
 }
