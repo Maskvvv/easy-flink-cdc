@@ -6,4 +6,8 @@ package com.esflink.starter.constants;
  */
 public class BaseEsConstants {
     public static final String ENABLE_PREFIX = "easy-flink.enable";
+
+    public static final String CONFIG_FILE = "easy-flink.conf";
+
+
 }

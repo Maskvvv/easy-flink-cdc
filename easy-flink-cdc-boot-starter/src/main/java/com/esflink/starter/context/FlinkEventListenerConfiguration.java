@@ -1,7 +1,9 @@
 package com.esflink.starter.context;
 
+import com.esflink.starter.config.DefaultFlinkPropertiesParser;
 import com.esflink.starter.config.EasyFlinkOrdered;
 import com.esflink.starter.config.FlinkProperties;
+import com.esflink.starter.config.FlinkPropertiesParser;
 import com.esflink.starter.constants.BaseEsConstants;
 import com.esflink.starter.data.DataChangeInfo;
 import com.esflink.starter.data.FlinkDataChangeSink;
@@ -18,8 +20,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 
 import java.util.List;
 
@@ -35,8 +41,15 @@ import java.util.List;
 public class FlinkEventListenerConfiguration implements ApplicationContextAware, InitializingBean, Ordered {
     @Autowired
     private FlinkProperties flinkProperties;
+    @Autowired
+    private FlinkPropertiesParser flinkPropertiesParser;
 
     private ApplicationContext applicationContext;
+
+    @Bean
+    public FlinkPropertiesParser flinkPropertiesParser() {
+        return new DefaultFlinkPropertiesParser();
+    }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -45,24 +58,38 @@ public class FlinkEventListenerConfiguration implements ApplicationContextAware,
 
     @Override
     public void afterPropertiesSet() throws Exception {
+
+        ResourceLoader resourceLoader = new DefaultResourceLoader();
+        Resource resource = resourceLoader.getResource(BaseEsConstants.CONFIG_FILE);
+        List<FlinkProperties> flinkProperties = flinkPropertiesParser.getProperties(resource);
+
+        // 创建 flink listener
+        for (FlinkProperties flinkProperty : flinkProperties) {
+            initFlinkListener(flinkProperty);
+        }
+
+    }
+
+    private void initFlinkListener(FlinkProperties flinkProperty) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(1);
 
-        DebeziumSourceFunction<DataChangeInfo> dataChangeInfoMySqlSource = buildDataChangeSource();
+        DebeziumSourceFunction<DataChangeInfo> dataChangeInfoMySqlSource = buildDataChangeSource(flinkProperty);
         DataStream<DataChangeInfo> streamSource = env
-                .addSource(dataChangeInfoMySqlSource, "mysql-source")
+                .addSource(dataChangeInfoMySqlSource)
                 .setParallelism(1);
-        List<FlinkDataChangeSink> dataChangeSinks = FlinkSinkHolder.getSink("test");
+
+        List<FlinkDataChangeSink> dataChangeSinks = FlinkSinkHolder.getSink(flinkProperty.getName());
         for (FlinkDataChangeSink dataChangeSink : dataChangeSinks) {
             streamSource.addSink(dataChangeSink);
         }
-        env.executeAsync("mysql-stream-cdc");
+        env.executeAsync();
     }
 
     /**
      * 构造变更数据源
      */
-    private DebeziumSourceFunction<DataChangeInfo> buildDataChangeSource() {
+    private DebeziumSourceFunction<DataChangeInfo> buildDataChangeSource(FlinkProperties flinkProperties) {
         return MySqlSource.<DataChangeInfo>builder()
                 .hostname(flinkProperties.getHostname())
                 .port(flinkProperties.getPort())

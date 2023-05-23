@@ -16,6 +16,8 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(value = "easy-flink")
 @ConditionalOnProperty(name = BaseEsConstants.ENABLE_PREFIX, havingValue = "true", matchIfMissing = true)
 public class FlinkProperties {
+    private String name;
+
     private String hostname;
 
     private Integer port;
@@ -27,6 +29,15 @@ public class FlinkProperties {
     private String username;
 
     private String password;
+
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public String getHostname() {
         return hostname;
@@ -74,5 +85,70 @@ public class FlinkProperties {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+
+    public static final class FlinkPropertiesBuilder {
+        private String name;
+        private String hostname;
+        private Integer port;
+        private String databaseList;
+        private String tableList;
+        private String username;
+        private String password;
+
+        private FlinkPropertiesBuilder() {
+        }
+
+        public static FlinkPropertiesBuilder aFlinkProperties() {
+            return new FlinkPropertiesBuilder();
+        }
+
+        public FlinkPropertiesBuilder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public FlinkPropertiesBuilder hostname(String hostname) {
+            this.hostname = hostname;
+            return this;
+        }
+
+        public FlinkPropertiesBuilder port(Integer port) {
+            this.port = port;
+            return this;
+        }
+
+        public FlinkPropertiesBuilder databaseList(String databaseList) {
+            this.databaseList = databaseList;
+            return this;
+        }
+
+        public FlinkPropertiesBuilder tableList(String tableList) {
+            this.tableList = tableList;
+            return this;
+        }
+
+        public FlinkPropertiesBuilder username(String username) {
+            this.username = username;
+            return this;
+        }
+
+        public FlinkPropertiesBuilder password(String password) {
+            this.password = password;
+            return this;
+        }
+
+        public FlinkProperties build() {
+            FlinkProperties flinkProperties = new FlinkProperties();
+            flinkProperties.setName(name);
+            flinkProperties.setHostname(hostname);
+            flinkProperties.setPort(port);
+            flinkProperties.setDatabaseList(databaseList);
+            flinkProperties.setTableList(tableList);
+            flinkProperties.setUsername(username);
+            flinkProperties.setPassword(password);
+            return flinkProperties;
+        }
     }
 }
