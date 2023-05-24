@@ -1,8 +1,6 @@
 package com.esflink.starter.context;
 
-import com.esflink.starter.annotation.FlinkSink;
 import com.esflink.starter.config.FlinkListenerProperties;
-import com.esflink.starter.data.FlinkDataChangeSink;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -18,8 +16,12 @@ public class FlinkListenerPropertiesHolder {
 
     private static final List<FlinkListenerProperties> PROPERTIES = new CopyOnWriteArrayList<>();
 
-    public static void registerProperties(FlinkDataChangeSink sink, FlinkSink flinkSink) {
+    public static void registerProperties(FlinkListenerProperties properties) {
+        PROPERTIES.add(properties);
+    }
 
+    public static void registerAllProperties(List<FlinkListenerProperties> properties) {
+        PROPERTIES.addAll(properties);
     }
 
     public static List<FlinkListenerProperties> getProperties() {

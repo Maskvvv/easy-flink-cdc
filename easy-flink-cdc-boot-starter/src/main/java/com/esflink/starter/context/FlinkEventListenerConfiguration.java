@@ -1,7 +1,6 @@
 package com.esflink.starter.context;
 
 import com.esflink.starter.config.EasyFlinkOrdered;
-import com.esflink.starter.config.EasyFlinkProperties;
 import com.esflink.starter.config.FlinkListenerProperties;
 import com.esflink.starter.constants.BaseEsConstants;
 import com.esflink.starter.data.DataChangeInfo;
@@ -15,14 +14,10 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 
 import java.util.List;
 
@@ -33,7 +28,6 @@ import java.util.List;
  * @since 2023/5/23 15:33
  */
 @Configuration
-@EnableConfigurationProperties(EasyFlinkProperties.class)
 @ConditionalOnProperty(name = BaseEsConstants.ENABLE_PREFIX, havingValue = "true", matchIfMissing = true)
 public class FlinkEventListenerConfiguration implements ApplicationContextAware, InitializingBean, Ordered {
 
@@ -46,16 +40,14 @@ public class FlinkEventListenerConfiguration implements ApplicationContextAware,
 
     @Override
     public void afterPropertiesSet() throws Exception {
-
-        ResourceLoader resourceLoader = new DefaultResourceLoader();
-        Resource resource = resourceLoader.getResource(BaseEsConstants.CONFIG_FILE);
-
         List<FlinkListenerProperties> flinkListenerProperties = FlinkListenerPropertiesHolder.getProperties();
 
+        throw new RuntimeException();
+
         // 创建 flink listener
-        for (FlinkListenerProperties flinkProperty : flinkListenerProperties) {
-            initFlinkListener(flinkProperty);
-        }
+        //for (FlinkListenerProperties flinkProperty : flinkListenerProperties) {
+        //    initFlinkListener(flinkProperty);
+        //}
 
     }
 
