@@ -21,7 +21,7 @@ import java.util.Map;
 public class DefaultFlinkPropertiesParser extends AbstractFlinkPropertiesParser {
 
     @Override
-    public List<FlinkProperties> getProperties(Resource resource) {
+    public List<FlinkListenerProperties> getProperties(Resource resource) {
         try (InputStreamReader reader = new InputStreamReader(resource.getInputStream())) {
             Config config = ConfigFactory.parseReader(reader).resolve();
 
@@ -32,13 +32,13 @@ public class DefaultFlinkPropertiesParser extends AbstractFlinkPropertiesParser 
     }
 
     /**
-     * 解析 Config 为 FlinkProperties
+     * 解析 Config 为 FlinkListenerProperties
      *
      * @author zhouhongyin
      * @since 2023/5/23 17:37
      */
-    private List<FlinkProperties> parser(Config config) throws IllegalAccessException {
-        List<FlinkProperties> flinkPropertiesList = new ArrayList<>();
+    private List<FlinkListenerProperties> parser(Config config) throws IllegalAccessException {
+        List<FlinkListenerProperties> flinkListenerPropertiesList = new ArrayList<>();
 
         ConfigObject root = config.root();
         for (Map.Entry<String, ConfigValue> rootEntry : root.entrySet()) {
@@ -46,31 +46,31 @@ public class DefaultFlinkPropertiesParser extends AbstractFlinkPropertiesParser 
             Config properties = config.getConfig(rootName);
 
             List<Field> flinkPropertiesFields = getFlinkPropertiesFields();
-            FlinkProperties flinkProperties = new FlinkProperties();
-            flinkProperties.setName(rootName);
+            FlinkListenerProperties flinkListenerProperties = new FlinkListenerProperties();
+            flinkListenerProperties.setName(rootName);
             for (Field filed : flinkPropertiesFields) {
                 String filedName = filed.getName();
                 String filedValue = properties.getString(filedName);
 
                 filed.setAccessible(true);
-                filed.set(flinkProperties, filedValue);
+                filed.set(flinkListenerProperties, filedValue);
             }
 
-            flinkPropertiesList.add(flinkProperties);
+            flinkListenerPropertiesList.add(flinkListenerProperties);
         }
-        return flinkPropertiesList;
+        return flinkListenerPropertiesList;
     }
 
     public static void main(String[] args) throws NoSuchFieldException, IllegalAccessException {
 
-        FlinkProperties flinkProperties = new FlinkProperties();
+        FlinkListenerProperties flinkListenerProperties = new FlinkListenerProperties();
 
-        Class<? extends FlinkProperties> flinkPropertiesClass = flinkProperties.getClass();
+        Class<? extends FlinkListenerProperties> flinkPropertiesClass = flinkListenerProperties.getClass();
         Field name = flinkPropertiesClass.getDeclaredField("name");
         name.setAccessible(true);
 
-        name.set(flinkProperties, "1111");
-        System.out.println(flinkProperties.getName());
+        name.set(flinkListenerProperties, "1111");
+        System.out.println(flinkListenerProperties.getName());
     }
 
 }

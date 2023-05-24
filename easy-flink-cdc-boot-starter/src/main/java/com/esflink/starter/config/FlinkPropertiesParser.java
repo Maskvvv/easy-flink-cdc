@@ -12,5 +12,5 @@ import java.util.List;
  */
 public interface FlinkPropertiesParser {
 
-    List<FlinkProperties> getProperties(Resource resource);
+    List<FlinkListenerProperties> getProperties(Resource resource);
 }

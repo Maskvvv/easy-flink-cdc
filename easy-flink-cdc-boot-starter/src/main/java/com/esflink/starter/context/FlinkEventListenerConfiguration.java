@@ -2,7 +2,7 @@ package com.esflink.starter.context;
 
 import com.esflink.starter.config.DefaultFlinkPropertiesParser;
 import com.esflink.starter.config.EasyFlinkOrdered;
-import com.esflink.starter.config.FlinkProperties;
+import com.esflink.starter.config.FlinkListenerProperties;
 import com.esflink.starter.config.FlinkPropertiesParser;
 import com.esflink.starter.constants.BaseEsConstants;
 import com.esflink.starter.data.DataChangeInfo;
@@ -35,11 +35,11 @@ import java.util.List;
  * @since 2023/5/23 15:33
  */
 @Configuration
-@EnableConfigurationProperties(FlinkProperties.class)
+@EnableConfigurationProperties(FlinkListenerProperties.class)
 @ConditionalOnProperty(name = BaseEsConstants.ENABLE_PREFIX, havingValue = "true", matchIfMissing = true)
 public class FlinkEventListenerConfiguration implements ApplicationContextAware, InitializingBean, Ordered {
     @Autowired
-    private FlinkProperties flinkProperties;
+    private FlinkListenerProperties flinkListenerProperties;
 
     private ApplicationContext applicationContext;
 
@@ -55,16 +55,16 @@ public class FlinkEventListenerConfiguration implements ApplicationContextAware,
         Resource resource = resourceLoader.getResource(BaseEsConstants.CONFIG_FILE);
 
         FlinkPropertiesParser flinkPropertiesParser = new DefaultFlinkPropertiesParser();
-        List<FlinkProperties> flinkProperties = flinkPropertiesParser.getProperties(resource);
+        List<FlinkListenerProperties> flinkListenerProperties = flinkPropertiesParser.getProperties(resource);
 
         // 创建 flink listener
-        for (FlinkProperties flinkProperty : flinkProperties) {
+        for (FlinkListenerProperties flinkProperty : flinkListenerProperties) {
             initFlinkListener(flinkProperty);
         }
 
     }
 
-    private void initFlinkListener(FlinkProperties flinkProperty) throws Exception {
+    private void initFlinkListener(FlinkListenerProperties flinkProperty) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(1);
 
@@ -83,14 +83,14 @@ public class FlinkEventListenerConfiguration implements ApplicationContextAware,
     /**
      * 构造变更数据源
      */
-    private DebeziumSourceFunction<DataChangeInfo> buildDataChangeSource(FlinkProperties flinkProperties) {
+    private DebeziumSourceFunction<DataChangeInfo> buildDataChangeSource(FlinkListenerProperties flinkListenerProperties) {
         return MySqlSource.<DataChangeInfo>builder()
-                .hostname(flinkProperties.getHostname())
-                .port(Integer.parseInt(flinkProperties.getPort()))
-                .databaseList(flinkProperties.getDatabaseList())
-                .tableList(flinkProperties.getTableList())
-                .username(flinkProperties.getUsername())
-                .password(flinkProperties.getPassword())
+                .hostname(flinkListenerProperties.getHostname())
+                .port(Integer.parseInt(flinkListenerProperties.getPort()))
+                .databaseList(flinkListenerProperties.getDatabaseList())
+                .tableList(flinkListenerProperties.getTableList())
+                .username(flinkListenerProperties.getUsername())
+                .password(flinkListenerProperties.getPassword())
 
                 /**initial初始化快照,即全量导入后增量导入(检测更新数据写入)
                  * latest:只进行增量导入(不读取历史变化)

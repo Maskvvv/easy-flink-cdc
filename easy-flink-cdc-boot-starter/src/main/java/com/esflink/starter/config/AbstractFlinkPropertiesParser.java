@@ -15,7 +15,7 @@ public abstract class AbstractFlinkPropertiesParser implements FlinkPropertiesPa
 
     protected List<Field> getFlinkPropertiesFields() {
         List<String> filedNames = new ArrayList<>();
-        Class<FlinkProperties> flinkPropertiesClass = FlinkProperties.class;
+        Class<FlinkListenerProperties> flinkPropertiesClass = FlinkListenerProperties.class;
         Field[] fields = flinkPropertiesClass.getDeclaredFields();
 
         return Arrays.asList(fields);
