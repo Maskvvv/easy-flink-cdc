@@ -1,5 +1,6 @@
-package com.esflink.starter.config;
+package com.esflink.starter.config.parser;
 
+import com.esflink.starter.config.FlinkListenerProperties;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigObject;
@@ -13,12 +14,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 获取配置文件
+ * typesafe 配置文件解析
  *
  * @author zhouhongyin
  * @since 2023/5/23 16:48
  */
-public class DefaultFlinkPropertiesParser extends AbstractFlinkPropertiesParser {
+public class DefaultFlinkListenerPropertiesParser extends AbstractFlinkListenerPropertiesParser {
+
+    public static final String NAME = "local";
 
     @Override
     public List<FlinkListenerProperties> getProperties(Resource resource) {
@@ -59,6 +62,11 @@ public class DefaultFlinkPropertiesParser extends AbstractFlinkPropertiesParser 
             flinkListenerPropertiesList.add(flinkListenerProperties);
         }
         return flinkListenerPropertiesList;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public static void main(String[] args) throws NoSuchFieldException, IllegalAccessException {

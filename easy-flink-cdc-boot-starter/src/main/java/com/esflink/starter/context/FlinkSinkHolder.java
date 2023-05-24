@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * FlinkSink 工厂
+ *
  * @author zhouhongyin
  * @since 2023/5/23 14:19
  */

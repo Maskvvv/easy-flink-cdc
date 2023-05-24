@@ -1,4 +1,6 @@
-package com.esflink.starter.config;
+package com.esflink.starter.config.parser;
+
+import com.esflink.starter.config.FlinkListenerProperties;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -11,7 +13,7 @@ import java.util.List;
  * @author zhouhongyin
  * @since 2023/5/23 16:48
  */
-public abstract class AbstractFlinkPropertiesParser implements FlinkPropertiesParser {
+public abstract class AbstractFlinkListenerPropertiesParser implements FlinkListenerPropertiesParser {
 
     protected List<Field> getFlinkPropertiesFields() {
         List<String> filedNames = new ArrayList<>();
