@@ -12,7 +12,9 @@ import com.ververica.cdc.debezium.DebeziumSourceFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -29,7 +31,7 @@ import java.util.List;
  */
 @Configuration
 @ConditionalOnProperty(name = BaseEsConstants.ENABLE_PREFIX, havingValue = "true", matchIfMissing = true)
-public class FlinkEventListenerConfiguration implements ApplicationContextAware, InitializingBean, Ordered {
+public class FlinkEventListenerConfiguration implements ApplicationContextAware, BeanFactoryPostProcessor, Ordered {
 
     private ApplicationContext applicationContext;
 
@@ -39,15 +41,18 @@ public class FlinkEventListenerConfiguration implements ApplicationContextAware,
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+
         List<FlinkListenerProperties> flinkListenerProperties = FlinkListenerPropertiesHolder.getProperties();
-
-        throw new RuntimeException();
-
         // 创建 flink listener
-        //for (FlinkListenerProperties flinkProperty : flinkListenerProperties) {
-        //    initFlinkListener(flinkProperty);
-        //}
+        for (FlinkListenerProperties flinkProperty : flinkListenerProperties) {
+            try {
+                initFlinkListener(flinkProperty);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new BeanCreationException("initFlinkListener失败");
+            }
+        }
 
     }
 

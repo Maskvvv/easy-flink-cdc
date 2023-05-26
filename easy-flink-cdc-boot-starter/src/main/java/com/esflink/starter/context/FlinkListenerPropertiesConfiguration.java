@@ -7,8 +7,9 @@ import com.esflink.starter.config.parser.DefaultFlinkListenerPropertiesParser;
 import com.esflink.starter.config.parser.FlinkListenerPropertiesParser;
 import com.esflink.starter.constants.BaseEsConstants;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -30,15 +31,14 @@ import java.util.List;
 @Configuration
 @EnableConfigurationProperties(EasyFlinkProperties.class)
 @ConditionalOnProperty(name = BaseEsConstants.ENABLE_PREFIX, havingValue = "true", matchIfMissing = true)
-public class FlinkListenerPropertiesConfiguration implements ApplicationContextAware, InitializingBean, Ordered {
+public class FlinkListenerPropertiesConfiguration implements ApplicationContextAware, BeanFactoryPostProcessor, Ordered {
 
     @Autowired
     private EasyFlinkProperties easyFlinkProperties;
 
 
     @Override
-    public void afterPropertiesSet() throws Exception {
-
+    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
         // 获取配置文件 resource
         ResourceLoader resourceLoader = new DefaultResourceLoader();
         Resource resource = resourceLoader.getResource(BaseEsConstants.CONFIG_FILE);
