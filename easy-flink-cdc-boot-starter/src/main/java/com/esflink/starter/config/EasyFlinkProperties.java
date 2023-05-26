@@ -65,4 +65,20 @@ public class EasyFlinkProperties {
 
         }
     }
+
+    public String getEnable() {
+        return enable;
+    }
+
+    public void setEnable(String enable) {
+        this.enable = enable;
+    }
+
+    public Nacos getCloudConfig() {
+        return cloudConfig;
+    }
+
+    public void setCloudConfig(Nacos cloudConfig) {
+        this.cloudConfig = cloudConfig;
+    }
 }
