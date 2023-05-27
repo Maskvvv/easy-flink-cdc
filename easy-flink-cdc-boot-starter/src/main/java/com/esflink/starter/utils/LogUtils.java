@@ -1,5 +1,7 @@
 package com.esflink.starter.utils;
 
+import org.slf4j.LoggerFactory;
+
 import java.util.logging.Logger;
 
 /**
@@ -12,7 +14,7 @@ public class LogUtils {
     /**
      * 日志打印工具名称
      */
-    private final static String LOGGER_NAME = "easy-es";
+    private final static String LOGGER_NAME = "easy-flink-cdc";
     /**
      * logger
      */

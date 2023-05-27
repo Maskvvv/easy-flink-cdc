@@ -6,11 +6,14 @@ import com.esflink.starter.constants.BaseEsConstants;
 import com.esflink.starter.data.DataChangeInfo;
 import com.esflink.starter.data.FlinkDataChangeSink;
 import com.esflink.starter.data.MysqlDeserialization;
+import com.esflink.starter.utils.LogUtils;
 import com.ververica.cdc.connectors.mysql.MySqlSource;
 import com.ververica.cdc.connectors.mysql.table.StartupOptions;
 import com.ververica.cdc.debezium.DebeziumSourceFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -32,7 +35,7 @@ import java.util.List;
 @Configuration
 @ConditionalOnProperty(name = BaseEsConstants.ENABLE_PREFIX, havingValue = "true", matchIfMissing = true)
 public class FlinkEventListenerConfiguration implements ApplicationContextAware, BeanFactoryPostProcessor, Ordered {
-
+    Logger logger = LoggerFactory.getLogger(FlinkEventListenerConfiguration.class);
     private ApplicationContext applicationContext;
 
     @Override
@@ -70,6 +73,8 @@ public class FlinkEventListenerConfiguration implements ApplicationContextAware,
             streamSource.addSink(dataChangeSink);
         }
         env.executeAsync();
+        LogUtils.formatInfo("FlinkListener {} 启动成功！", flinkProperty.getName());
+        logger.info("FlinkListener {} 启动成功！", flinkProperty.getName());
     }
 
     /**
@@ -94,7 +99,8 @@ public class FlinkEventListenerConfiguration implements ApplicationContextAware,
                  * 1958017
                  */
                 //.startupOptions(StartupOptions.specificOffset("binlog.000005", 1957205))
-                .startupOptions(StartupOptions.timestamp(1684762706000L))
+                //.startupOptions(StartupOptions.timestamp(1684762706000L))
+                .startupOptions(StartupOptions.latest())
                 .deserializer(new MysqlDeserialization())
                 .serverTimeZone("GMT+8")
                 .build();
