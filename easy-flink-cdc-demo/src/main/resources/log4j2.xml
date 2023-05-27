@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO" packages="oberon.logging.layout">
+    <Properties>
+        <Property name="LOG_HOME">${sys:logging.file.path:-logs}</Property>
+        <Property name="LOG_FILE_PREFIX">${sys:logging.file.prefix:-}</Property>
+        <Property name="LOG_NAME_Normal">easy-flink-normal</Property>
+        <Property name="LOG_FILE_Normal">${sys:LOG_HOME}/${sys:LOG_FILE_PREFIX}${sys:LOG_NAME_Normal}.log</Property>
+        <Property name="LOG_NAME_Access">ourea-access</Property>
+        <Property name="LOG_FILE_Access">${sys:LOG_HOME}/${sys:LOG_FILE_PREFIX}${sys:LOG_NAME_Access}.log</Property>
+
+        <Property name="PID">????</Property>
+        <Property name="LOG_EXCEPTION_CONVERSION_WORD">%xwEx</Property>
+        <Property name="LOG_LEVEL_PATTERN">%5p</Property>
+        <Property name="CONSOLE_LOG_PATTERN">111%clr{%d{yyyy-MM-dd HH:mm:ss.SSS}}{faint} %clr{${LOG_LEVEL_PATTERN}} %clr{${sys:PID}}{magenta} %clr{---}{faint} %clr{[%15.15t]}{faint} %clr{%-40.40c{1.}}{cyan} %clr{:}{faint} %m%n${sys:LOG_EXCEPTION_CONVERSION_WORD}</Property>
+    </Properties>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <MarkerFilter marker="RequestLogging" onMatch="DENY" onMismatch="NEUTRAL" />
+            <PatternLayout charset="UTF-8" pattern="${sys:CONSOLE_LOG_PATTERN}" />
+        </Console>
+
+        <RollingFile name="NormalAppender" fileName="${sys:LOG_FILE_Normal}" filePattern="${sys:LOG_HOME}/$${date:yyyy-MM}/${sys:LOG_NAME_Normal}-%d{yyyy-MM-dd}-%i.log.gz">
+            <Filters>
+                <!--<ThresholdFilter level="error" onMatch="DENY" onMismatch="NEUTRAL" />
+                <ThresholdFilter level="trace" onMatch="NEUTRAL" onMismatch="DENY" />-->
+                <MarkerFilter marker="RequestLogging" onMatch="DENY" onMismatch="NEUTRAL" />
+            </Filters>
+            <DefaultJsonLayout charset="UTF-8" />
+            <Policies>
+                <SizeBasedTriggeringPolicy size="100MB" />
+            </Policies>
+        </RollingFile>
+
+        <RollingFile name="AccessAppender" fileName="${sys:LOG_FILE_Access}" filePattern="${sys:LOG_HOME}/$${date:yyyy-MM}/${sys:LOG_NAME_Access}-%d{yyyy-MM-dd}-%i.log.gz">
+            <Filters>
+                <MarkerFilter marker="RequestLogging" onMatch="ACCEPT" onMismatch="DENY" />
+            </Filters>
+            <DefaultJsonLayout charset="UTF-8" withSource="false" withThrown="false" withThread="false" />
+            <Policies>
+                <SizeBasedTriggeringPolicy size="100MB" />
+            </Policies>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="Console" />
+<!--            <AppenderRef ref="NormalAppender" />-->
+<!--            <AppenderRef ref="AccessAppender" />-->
+        </Root>
+    </Loggers>
+</Configuration>
