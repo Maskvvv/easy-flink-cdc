@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="INFO" packages="oberon.logging.layout">
+<Configuration status="INFO">
     <Properties>
         <Property name="LOG_HOME">${sys:logging.file.path:-logs}</Property>
         <Property name="LOG_FILE_PREFIX">${sys:logging.file.prefix:-}</Property>
@@ -40,10 +40,19 @@
                 <SizeBasedTriggeringPolicy size="100MB" />
             </Policies>
         </RollingFile>
+
+<!--        <Async name="Async">-->
+<!--            <AppenderRef ref="Console"/>-->
+<!--        </Async>-->
     </Appenders>
     <Loggers>
+<!--        <AsyncLogger name="com.zhy" level="INFO" includeLocation="false" additivity="false">-->
+<!--            <AppenderRef ref="Async"/>-->
+<!--        </AsyncLogger>-->
+
         <Root level="info">
             <AppenderRef ref="Console" />
+<!--            <AppenderRef ref="Async" />-->
 <!--            <AppenderRef ref="NormalAppender" />-->
 <!--            <AppenderRef ref="AccessAppender" />-->
         </Root>
