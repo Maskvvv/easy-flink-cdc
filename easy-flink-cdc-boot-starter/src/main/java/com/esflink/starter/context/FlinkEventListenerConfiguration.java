@@ -1,11 +1,13 @@
 package com.esflink.starter.context;
 
+import com.esflink.starter.annotation.FlinkSink;
 import com.esflink.starter.config.EasyFlinkOrdered;
 import com.esflink.starter.config.FlinkListenerProperties;
 import com.esflink.starter.constants.BaseEsConstants;
 import com.esflink.starter.data.DataChangeInfo;
 import com.esflink.starter.data.FlinkDataChangeSink;
 import com.esflink.starter.data.MysqlDeserialization;
+import com.esflink.starter.prox.FlinkSinkProxy;
 import com.esflink.starter.utils.LogUtils;
 import com.ververica.cdc.connectors.mysql.MySqlSource;
 import com.ververica.cdc.connectors.mysql.table.StartupOptions;
@@ -17,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
@@ -24,6 +27,10 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.List;
 
 /**
@@ -34,7 +41,7 @@ import java.util.List;
  */
 @Configuration
 @ConditionalOnProperty(name = BaseEsConstants.ENABLE_PREFIX, havingValue = "true", matchIfMissing = true)
-public class FlinkEventListenerConfiguration implements ApplicationContextAware, BeanFactoryPostProcessor, Ordered {
+public class FlinkEventListenerConfiguration implements ApplicationContextAware, BeanFactoryPostProcessor, BeanPostProcessor, Ordered {
     Logger logger = LoggerFactory.getLogger(FlinkEventListenerConfiguration.class);
     private ApplicationContext applicationContext;
 
@@ -104,6 +111,15 @@ public class FlinkEventListenerConfiguration implements ApplicationContextAware,
                 .deserializer(new MysqlDeserialization())
                 .serverTimeZone("GMT+8")
                 .build();
+    }
+
+    @Override
+    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+        Annotation annotation = bean.getClass().getAnnotation(FlinkSink.class);
+        if (annotation != null) {
+            return Proxy.newProxyInstance(bean.getClass().getClassLoader(), bean.getClass().getInterfaces(), new FlinkSinkProxy(bean));
+        }
+        return null;
     }
 
     @Override
