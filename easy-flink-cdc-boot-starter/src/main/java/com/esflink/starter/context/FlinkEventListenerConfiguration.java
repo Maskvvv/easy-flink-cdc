@@ -133,7 +133,9 @@ public class FlinkEventListenerConfiguration implements ApplicationContextAware,
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
         Annotation annotation = bean.getClass().getAnnotation(FlinkSink.class);
         if (annotation != null) {
-            return Proxy.newProxyInstance(bean.getClass().getClassLoader(), bean.getClass().getInterfaces(), new FlinkSinkProxy(bean));
+            return Proxy.newProxyInstance(bean.getClass().getClassLoader(),
+                    bean.getClass().getInterfaces(),
+                    new FlinkSinkProxy(bean));
         }
         return null;
     }

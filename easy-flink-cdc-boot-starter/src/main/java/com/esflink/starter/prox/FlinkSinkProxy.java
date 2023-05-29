@@ -2,6 +2,7 @@ package com.esflink.starter.prox;
 
 import com.esflink.starter.utils.LogUtils;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
@@ -11,7 +12,7 @@ import java.lang.reflect.Method;
  * @author zhouhongyin
  * @since 2023/5/28 15:12
  */
-public class FlinkSinkProxy implements InvocationHandler {
+public class FlinkSinkProxy implements InvocationHandler, Serializable {
     private Object sink;
 
     public FlinkSinkProxy(Object sink) {
