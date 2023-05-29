@@ -8,8 +8,9 @@ package com.esflink.starter.config;
  */
 public interface EasyFlinkOrdered {
     int ORDER_SINK = 10;
+    int ORDER_ZOOKEEPER = 20;
     int ORDER_CONF = 20;
-    int ORDER_LISTENER_PROPERTIES = 20;
+    int ORDER_LISTENER_PROPERTIES = 30;
     int ORDER_LISTENER = 60;
     int ORDER_REDIS = 40;
     int ORDER_ROCKETMQ = 40;

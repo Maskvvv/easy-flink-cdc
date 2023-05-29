@@ -1,7 +1,5 @@
 package com.esflink.starter.utils;
 
-import org.slf4j.LoggerFactory;
-
 import java.util.logging.Logger;
 
 /**

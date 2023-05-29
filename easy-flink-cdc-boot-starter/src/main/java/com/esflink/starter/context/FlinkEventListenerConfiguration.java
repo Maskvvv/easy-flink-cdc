@@ -14,13 +14,10 @@ import com.ververica.cdc.connectors.mysql.table.StartupOptions;
 import com.ververica.cdc.debezium.DebeziumSourceFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -28,10 +25,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Listener 配置类
@@ -41,9 +37,12 @@ import java.util.List;
  */
 @Configuration
 @ConditionalOnProperty(name = BaseEsConstants.ENABLE_PREFIX, havingValue = "true", matchIfMissing = true)
-public class FlinkEventListenerConfiguration implements ApplicationContextAware, BeanFactoryPostProcessor, BeanPostProcessor, Ordered {
-    Logger logger = LoggerFactory.getLogger(FlinkEventListenerConfiguration.class);
+public class FlinkEventListenerConfiguration implements ApplicationContextAware, BeanPostProcessor, InitializingBean, Ordered {
+
     private ApplicationContext applicationContext;
+
+    //@Autowired
+    //private ZkClientx zkClientx;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -51,9 +50,11 @@ public class FlinkEventListenerConfiguration implements ApplicationContextAware,
     }
 
     @Override
-    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-
+    public void afterPropertiesSet() throws Exception {
         List<FlinkListenerProperties> flinkListenerProperties = FlinkListenerPropertiesHolder.getProperties();
+
+        initSink();
+
         // 创建 flink listener
         for (FlinkListenerProperties flinkProperty : flinkListenerProperties) {
             try {
@@ -64,6 +65,22 @@ public class FlinkEventListenerConfiguration implements ApplicationContextAware,
             }
         }
 
+    }
+
+    private void initSink() {
+        Map<String, Object> beansWithAnnotation = applicationContext.getBeansWithAnnotation(FlinkSink.class);
+        beansWithAnnotation.forEach((key, value) -> {
+            if (value instanceof FlinkDataChangeSink) {
+                try {
+                    FlinkSink flinkSink = value.getClass().getAnnotation(FlinkSink.class);
+                    FlinkDataChangeSink sinkProxyInstance = (FlinkDataChangeSink) Proxy.newProxyInstance(value.getClass().getClassLoader(), value.getClass().getInterfaces(), new FlinkSinkProxy(value));
+                    FlinkSinkHolder.registerSink(sinkProxyInstance, flinkSink);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
     }
 
     private void initFlinkListener(FlinkListenerProperties flinkProperty) throws Exception {
@@ -80,8 +97,7 @@ public class FlinkEventListenerConfiguration implements ApplicationContextAware,
             streamSource.addSink(dataChangeSink);
         }
         env.executeAsync();
-        LogUtils.formatInfo("FlinkListener {} 启动成功！", flinkProperty.getName());
-        logger.info("FlinkListener {} 启动成功！", flinkProperty.getName());
+        LogUtils.formatInfo("FlinkListener %s 启动成功！", flinkProperty.getName());
     }
 
     /**

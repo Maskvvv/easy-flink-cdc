@@ -21,6 +21,8 @@ public class EasyFlinkProperties {
 
     private Nacos cloudConfig;
 
+    private ZkClientx zkClientx;
+
     public static class Nacos {
         public static final String DEFAULT_GROUP = "DEFAULT_GROUP";
 
@@ -64,6 +66,26 @@ public class EasyFlinkProperties {
             }
 
         }
+    }
+
+    public static class ZkClientx {
+        private String zkServers;
+
+        public String getZkServers() {
+            return zkServers;
+        }
+
+        public void setZkServers(String zkServers) {
+            this.zkServers = zkServers;
+        }
+    }
+
+    public ZkClientx getZkClientx() {
+        return zkClientx;
+    }
+
+    public void setZkClientx(ZkClientx zkClientx) {
+        this.zkClientx = zkClientx;
     }
 
     public String getEnable() {

@@ -5,6 +5,12 @@
       "type": "java.lang.String",
       "description": "Description for easy-flink.enable.",
       "sourceType": "com.esflink.starter.config.EasyFlinkProperties"
+    },
+    {
+      "name": "easy-flink.cloudConfig",
+      "type": "java.lang.String",
+      "description": "Description for easy-flink.enable.",
+      "sourceType": "com.esflink.starter.config.EasyFlinkProperties"
     }
   ]
 }

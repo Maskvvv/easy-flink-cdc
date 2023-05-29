@@ -2,7 +2,6 @@ package com.esflink.starter.zookeeper;
 
 import org.I0Itec.zkclient.exception.ZkMarshallingError;
 import org.I0Itec.zkclient.serialize.ZkSerializer;
-import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
 
