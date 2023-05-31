@@ -1,6 +1,6 @@
-package com.esflink.starter.config.parser;
+package com.esflink.starter.properties.parser;
 
-import com.esflink.starter.config.FlinkListenerProperties;
+import com.esflink.starter.properties.FlinkListenerProperties;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

@@ -1,11 +1,12 @@
-package com.esflink.starter.context;
+package com.esflink.starter.configuration;
 
-import com.esflink.starter.config.EasyFlinkOrdered;
-import com.esflink.starter.config.EasyFlinkProperties;
-import com.esflink.starter.config.FlinkListenerProperties;
-import com.esflink.starter.config.parser.DefaultFlinkListenerPropertiesParser;
-import com.esflink.starter.config.parser.FlinkListenerPropertiesParser;
 import com.esflink.starter.constants.BaseEsConstants;
+import com.esflink.starter.holder.FlinkListenerPropertiesHolder;
+import com.esflink.starter.properties.EasyFlinkOrdered;
+import com.esflink.starter.properties.EasyFlinkProperties;
+import com.esflink.starter.properties.FlinkListenerProperties;
+import com.esflink.starter.properties.parser.DefaultFlinkListenerPropertiesParser;
+import com.esflink.starter.properties.parser.FlinkListenerPropertiesParser;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;

@@ -1,6 +1,6 @@
-package com.esflink.starter.config.parser;
+package com.esflink.starter.properties.parser;
 
-import com.esflink.starter.config.FlinkListenerProperties;
+import com.esflink.starter.properties.FlinkListenerProperties;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigObject;

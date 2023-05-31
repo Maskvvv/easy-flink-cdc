@@ -1,4 +1,4 @@
-package com.esflink.starter.config;
+package com.esflink.starter.properties;
 
 /**
  * 定义 easy-flink 各模块加载顺序

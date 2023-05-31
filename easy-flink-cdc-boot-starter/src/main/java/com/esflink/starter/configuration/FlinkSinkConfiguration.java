@@ -1,7 +1,7 @@
-package com.esflink.starter.context;
+package com.esflink.starter.configuration;
 
-import com.esflink.starter.config.EasyFlinkOrdered;
 import com.esflink.starter.constants.BaseEsConstants;
+import com.esflink.starter.properties.EasyFlinkOrdered;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;

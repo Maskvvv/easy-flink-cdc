@@ -1,6 +1,6 @@
-package com.esflink.starter.context;
+package com.esflink.starter.holder;
 
-import com.esflink.starter.config.FlinkListenerProperties;
+import com.esflink.starter.properties.FlinkListenerProperties;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;

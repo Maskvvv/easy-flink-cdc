@@ -4,13 +4,13 @@
       "name": "easy-flink.enable",
       "type": "java.lang.String",
       "description": "Description for easy-flink.enable.",
-      "sourceType": "com.esflink.starter.config.EasyFlinkProperties"
+      "sourceType": "com.esflink.starter.properties.EasyFlinkProperties"
     },
     {
       "name": "easy-flink.cloudConfig",
       "type": "java.lang.String",
       "description": "Description for easy-flink.enable.",
-      "sourceType": "com.esflink.starter.config.EasyFlinkProperties"
+      "sourceType": "com.esflink.starter.properties.EasyFlinkProperties"
     }
   ]
 }

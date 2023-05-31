@@ -1,4 +1,4 @@
-package com.esflink.starter.config;
+package com.esflink.starter.properties;
 
 
 /**
