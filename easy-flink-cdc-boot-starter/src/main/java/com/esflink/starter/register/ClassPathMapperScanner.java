@@ -1,10 +1,9 @@
 package com.esflink.starter.register;
 
 import com.esflink.starter.annotation.FlinkSink;
-import com.esflink.starter.data.FlinkDataChangeSink;
+import com.esflink.starter.common.data.FlinkDataChangeSink;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -14,12 +13,8 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 import org.springframework.core.type.AnnotationMetadata;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 组件扫描

@@ -9,10 +9,24 @@ import com.ververica.cdc.connectors.mysql.table.StartupOptions;
  */
 public class LogPosition {
 
-    private String applicationName;
+    private FlinkJobIdentity applicationName;
 
 
-    private long startupTimestampMillis;
+    private Long startupTimestampMillis;
 
+    public FlinkJobIdentity getApplicationName() {
+        return applicationName;
+    }
 
+    public void setApplicationName(FlinkJobIdentity applicationName) {
+        this.applicationName = applicationName;
+    }
+
+    public Long getStartupTimestampMillis() {
+        return startupTimestampMillis;
+    }
+
+    public void setStartupTimestampMillis(Long startupTimestampMillis) {
+        this.startupTimestampMillis = startupTimestampMillis;
+    }
 }

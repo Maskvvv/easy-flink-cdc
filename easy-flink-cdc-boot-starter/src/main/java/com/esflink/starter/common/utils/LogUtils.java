@@ -1,4 +1,4 @@
-package com.esflink.starter.utils;
+package com.esflink.starter.common.utils;
 
 import java.util.logging.Logger;
 

@@ -1,6 +1,6 @@
 package com.esflink.starter.prox;
 
-import com.esflink.starter.utils.LogUtils;
+import com.esflink.starter.common.utils.LogUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;

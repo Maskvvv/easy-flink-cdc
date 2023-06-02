@@ -1,7 +1,7 @@
 package com.esflink.starter.holder;
 
 import com.esflink.starter.annotation.FlinkSink;
-import com.esflink.starter.data.FlinkDataChangeSink;
+import com.esflink.starter.common.data.FlinkDataChangeSink;
 
 import java.util.ArrayList;
 import java.util.List;

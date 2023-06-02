@@ -1,4 +1,4 @@
-package com.esflink.starter.data;
+package com.esflink.starter.common.data;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.CaseFormat;

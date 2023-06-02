@@ -1,8 +1,8 @@
 package com.esflink.demo.sink;
 
 import com.esflink.starter.annotation.FlinkSink;
-import com.esflink.starter.data.DataChangeInfo;
-import com.esflink.starter.data.FlinkDataChangeSink;
+import com.esflink.starter.common.data.DataChangeInfo;
+import com.esflink.starter.common.data.FlinkDataChangeSink;
 
 /**
  * @author zhouhongyin

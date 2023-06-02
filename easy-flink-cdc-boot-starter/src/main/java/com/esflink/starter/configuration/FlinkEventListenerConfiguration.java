@@ -1,16 +1,16 @@
 package com.esflink.starter.configuration;
 
 import com.esflink.starter.annotation.FlinkSink;
+import com.esflink.starter.common.data.DataChangeInfo;
+import com.esflink.starter.common.data.FlinkDataChangeSink;
+import com.esflink.starter.common.data.MysqlDeserialization;
+import com.esflink.starter.common.utils.LogUtils;
 import com.esflink.starter.constants.BaseEsConstants;
-import com.esflink.starter.data.DataChangeInfo;
-import com.esflink.starter.data.FlinkDataChangeSink;
-import com.esflink.starter.data.MysqlDeserialization;
 import com.esflink.starter.holder.FlinkListenerPropertiesHolder;
 import com.esflink.starter.holder.FlinkSinkHolder;
 import com.esflink.starter.properties.EasyFlinkOrdered;
 import com.esflink.starter.properties.FlinkListenerProperties;
 import com.esflink.starter.prox.FlinkSinkProxy;
-import com.esflink.starter.utils.LogUtils;
 import com.ververica.cdc.connectors.mysql.MySqlSource;
 import com.ververica.cdc.connectors.mysql.table.StartupOptions;
 import com.ververica.cdc.debezium.DebeziumSourceFunction;

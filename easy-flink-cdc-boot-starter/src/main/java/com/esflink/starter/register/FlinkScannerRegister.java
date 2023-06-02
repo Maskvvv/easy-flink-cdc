@@ -1,7 +1,7 @@
 package com.esflink.starter.register;
 
 import com.esflink.starter.annotation.EasyFlinkScan;
-import com.esflink.starter.utils.LogUtils;
+import com.esflink.starter.common.utils.LogUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;

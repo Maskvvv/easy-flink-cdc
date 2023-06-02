@@ -1,4 +1,4 @@
-package com.esflink.starter.data;
+package com.esflink.starter.common.data;
 
 
 import org.apache.flink.streaming.api.functions.sink.SinkFunction;
