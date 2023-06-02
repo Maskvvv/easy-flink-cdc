@@ -11,5 +11,7 @@ public class BaseEsConstants {
 
     public static final String CONFIG_FILE = "easy-flink.conf";
 
+    public static final String META_DATA_DIR = "easy-flink.meta.dataDir";
+
 
 }

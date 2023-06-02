@@ -21,6 +21,10 @@ public class EasyFlinkProperties {
 
     private Nacos cloudConfig;
 
+    private MetaModel metaModel;
+
+    private Meta meta;
+
     private ZkClientx zkClientx;
 
     public static class Nacos {
@@ -77,6 +81,22 @@ public class EasyFlinkProperties {
 
         public void setZkServers(String zkServers) {
             this.zkServers = zkServers;
+        }
+    }
+
+    public static enum MetaModel {
+        FILE, ZOOKEEPER
+    }
+
+    public static class Meta {
+        private String dataDir;
+
+        public String getDataDir() {
+            return dataDir;
+        }
+
+        public void setDataDir(String dataDir) {
+            this.dataDir = dataDir;
         }
     }
 

@@ -18,15 +18,15 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.core.env.Environment;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Proxy;
 import java.util.List;
 import java.util.Map;
@@ -39,9 +39,11 @@ import java.util.Map;
  */
 @Configuration
 @ConditionalOnProperty(name = BaseEsConstants.ENABLE_PREFIX, havingValue = "true", matchIfMissing = true)
-public class FlinkEventListenerConfiguration implements ApplicationContextAware, BeanPostProcessor, InitializingBean, Ordered {
+public class FlinkEventListenerConfiguration implements ApplicationContextAware, SmartInitializingSingleton, EnvironmentAware, Ordered {
 
     private ApplicationContext applicationContext;
+
+    private Environment environment;
 
     //@Autowired
     //private ZkClientx zkClientx;
@@ -51,8 +53,10 @@ public class FlinkEventListenerConfiguration implements ApplicationContextAware,
         this.applicationContext = applicationContext;
     }
 
+
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterSingletonsInstantiated() {
+
         List<FlinkListenerProperties> flinkListenerProperties = FlinkListenerPropertiesHolder.getProperties();
 
         initSink();
@@ -131,16 +135,6 @@ public class FlinkEventListenerConfiguration implements ApplicationContextAware,
                 .build();
     }
 
-    @Override
-    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-        Annotation annotation = bean.getClass().getAnnotation(FlinkSink.class);
-        if (annotation != null) {
-            return Proxy.newProxyInstance(bean.getClass().getClassLoader(),
-                    bean.getClass().getInterfaces(),
-                    new FlinkSinkProxy(bean));
-        }
-        return null;
-    }
 
     @Override
     public int getOrder() {
@@ -148,4 +142,8 @@ public class FlinkEventListenerConfiguration implements ApplicationContextAware,
     }
 
 
+    @Override
+    public void setEnvironment(Environment environment) {
+        this.environment = environment;
+    }
 }
