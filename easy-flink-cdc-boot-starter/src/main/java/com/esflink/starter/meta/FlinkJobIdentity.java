@@ -11,18 +11,18 @@ import java.util.Objects;
  */
 public class FlinkJobIdentity {
 
-    private String application;
+    private String applicationName;
 
     private String port;
 
     private String flinkJobName;
 
-    public String getApplication() {
-        return application;
+    public String getApplicationName() {
+        return applicationName;
     }
 
-    public void setApplication(String application) {
-        this.application = application;
+    public void setApplicationName(String applicationName) {
+        this.applicationName = applicationName;
     }
 
     public String getPort() {
@@ -46,11 +46,11 @@ public class FlinkJobIdentity {
         if (this == o) return true;
         if (!(o instanceof FlinkJobIdentity)) return false;
         FlinkJobIdentity that = (FlinkJobIdentity) o;
-        return application.equals(that.application) && port.equals(that.port) && flinkJobName.equals(that.flinkJobName);
+        return applicationName.equals(that.applicationName) && port.equals(that.port) && flinkJobName.equals(that.flinkJobName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(application, port, flinkJobName);
+        return Objects.hash(applicationName, port, flinkJobName);
     }
 }

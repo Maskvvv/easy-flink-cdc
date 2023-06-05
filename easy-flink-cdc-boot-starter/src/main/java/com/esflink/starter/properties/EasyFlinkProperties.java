@@ -2,9 +2,15 @@ package com.esflink.starter.properties;
 
 
 import com.esflink.starter.constants.BaseEsConstants;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.core.env.Environment;
+
+import javax.annotation.PostConstruct;
 
 /**
  * flink 数据库配置信息
@@ -21,11 +27,43 @@ public class EasyFlinkProperties {
 
     private Nacos cloudConfig;
 
-    private MetaModel metaModel;
+    private MetaModel metaModel = MetaModel.FILE;
 
     private Meta meta;
 
     private ZkClientx zkClientx;
+
+    @Autowired
+    @JsonIgnore
+    private Environment environment;
+
+    @PostConstruct
+    public void init() {
+        this.overrideFromEnv();
+    }
+
+    private void overrideFromEnv() {
+        if (this.meta == null) {
+            this.meta = new Meta();
+        }
+
+        if (StringUtils.isBlank(meta.getApplicationName())) {
+            String applicationName = environment.resolvePlaceholders("${spring.application.name:unname}");
+            this.meta.setApplicationName(applicationName);
+        }
+
+        if (StringUtils.isBlank(meta.getPort())) {
+            String port = environment.resolvePlaceholders("${server.port:unport}");
+            this.meta.setPort(port);
+        }
+
+        if (StringUtils.isBlank(meta.getDataDir())) {
+            String dataDir = environment.resolvePlaceholders("${user.home}");
+            this.meta.setApplicationName(dataDir);
+        }
+
+    }
+
 
     public static class Nacos {
         public static final String DEFAULT_GROUP = "DEFAULT_GROUP";
@@ -89,6 +127,11 @@ public class EasyFlinkProperties {
     }
 
     public static class Meta {
+
+        private String applicationName;
+
+        private String port;
+
         private String dataDir;
 
         public String getDataDir() {
@@ -97,6 +140,22 @@ public class EasyFlinkProperties {
 
         public void setDataDir(String dataDir) {
             this.dataDir = dataDir;
+        }
+
+        public String getApplicationName() {
+            return applicationName;
+        }
+
+        public void setApplicationName(String applicationName) {
+            this.applicationName = applicationName;
+        }
+
+        public String getPort() {
+            return port;
+        }
+
+        public void setPort(String port) {
+            this.port = port;
         }
     }
 
@@ -122,5 +181,29 @@ public class EasyFlinkProperties {
 
     public void setCloudConfig(Nacos cloudConfig) {
         this.cloudConfig = cloudConfig;
+    }
+
+    public MetaModel getMetaModel() {
+        return metaModel;
+    }
+
+    public void setMetaModel(MetaModel metaModel) {
+        this.metaModel = metaModel;
+    }
+
+    public Meta getMeta() {
+        return meta;
+    }
+
+    public void setMeta(Meta meta) {
+        this.meta = meta;
+    }
+
+    public Environment getEnvironment() {
+        return environment;
+    }
+
+    public void setEnvironment(Environment environment) {
+        this.environment = environment;
     }
 }

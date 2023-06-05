@@ -26,6 +26,8 @@ import java.io.File;
 @ConditionalOnProperty(name = BaseEsConstants.ENABLE_PREFIX, havingValue = "true", matchIfMissing = true)
 public class MetaManagerConfiguration implements Ordered, EnvironmentAware {
 
+    public static final String SEPARATOR = File.separator;
+
     @Autowired
     private EasyFlinkProperties easyFlinkProperties;
 
@@ -34,8 +36,9 @@ public class MetaManagerConfiguration implements Ordered, EnvironmentAware {
     @Bean(initMethod = "start", destroyMethod = "stop")
     public FileMixedMetaManager fileMixedMetaManager() {
         FileMixedMetaManager fileMixedMetaManager = new FileMixedMetaManager();
-        String property = environment.getProperty(BaseEsConstants.META_DATA_DIR);
-        fileMixedMetaManager.setDataDir((property != null ? property : System.getProperty("user.home")) + File.separator);
+        EasyFlinkProperties.Meta meta = easyFlinkProperties.getMeta();
+        String dataDir = meta.getDataDir().endsWith(SEPARATOR) ? meta.getDataDir() : meta.getDataDir() + SEPARATOR;
+        fileMixedMetaManager.setDataDir(dataDir);
         return fileMixedMetaManager;
     }
 

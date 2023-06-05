@@ -9,17 +9,17 @@ import com.ververica.cdc.connectors.mysql.table.StartupOptions;
  */
 public class LogPosition {
 
-    private FlinkJobIdentity applicationName;
+    private FlinkJobIdentity flinkJobIdentity;
 
 
     private Long startupTimestampMillis;
 
-    public FlinkJobIdentity getApplicationName() {
-        return applicationName;
+    public FlinkJobIdentity getFlinkJobIdentity() {
+        return flinkJobIdentity;
     }
 
-    public void setApplicationName(FlinkJobIdentity applicationName) {
-        this.applicationName = applicationName;
+    public void setFlinkJobIdentity(FlinkJobIdentity flinkJobIdentity) {
+        this.flinkJobIdentity = flinkJobIdentity;
     }
 
     public Long getStartupTimestampMillis() {

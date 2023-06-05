@@ -3,5 +3,6 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.esflink.starter.configuration.FlinkSinkConfiguration,\
   com.esflink.starter.configuration.FlinkListenerPropertiesConfiguration,\
   com.esflink.starter.configuration.FlinkEventListenerConfiguration,\
-  com.esflink.starter.configuration.FlinkZookeeperConfiguration
+  com.esflink.starter.configuration.FlinkZookeeperConfiguration,\
+  com.esflink.starter.configuration.MetaManagerConfiguration
 
