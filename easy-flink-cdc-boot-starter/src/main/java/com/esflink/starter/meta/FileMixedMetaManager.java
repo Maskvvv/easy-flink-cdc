@@ -4,19 +4,19 @@ package com.esflink.starter.meta;
 import com.alibaba.fastjson.JSON;
 import com.esflink.starter.common.exception.MetaManagerException;
 import com.esflink.starter.common.utils.LogUtils;
+import com.esflink.starter.common.utils.ResourceUtils;
 import org.apache.commons.io.FileUtils;
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Component;
-import org.springframework.util.PathMatcher;
+import org.springframework.util.ObjectUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -51,6 +51,7 @@ public class FileMixedMetaManager extends MemoryMetaManager implements MetaManag
      */
     private File dataDir;
     private String dataFileName = "meta.dat";
+    private static final String dataDirEndsWith = "/**/meta.dat";
 
     /**
      * flinkJob 游标文件map
@@ -109,17 +110,14 @@ public class FileMixedMetaManager extends MemoryMetaManager implements MetaManag
 
     public void stop() {
         flushDataToFile();// 刷新数据
-
         super.stop();
         executor.shutdownNow();
-        destinations.clear();
-        batches.clear();
     }
 
 
     private void flushDataToFile() {
-        for (String destination : destinations.keySet()) {
-            flushDataToFile(destination);
+        for (FlinkJobIdentity flinkJobIdentity : cursors.keySet()) {
+            flushDataToFile(flinkJobIdentity);
         }
     }
 
@@ -140,46 +138,22 @@ public class FileMixedMetaManager extends MemoryMetaManager implements MetaManag
     }
 
 
-    private void loadCursor() throws IOException {
+    private void loadCursor() {
         PathMatchingResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver(new FileSystemResourceLoader());
-        resourcePatternResolver.setPathMatcher(new PathMatcher() {
-            @Override
-            public boolean isPattern(String path) {
-                return false;
+        try {
+            Resource[] resources = resourcePatternResolver.getResources("file:" + dataDir.getPath() + dataDirEndsWith);
+            if (ObjectUtils.isEmpty(resources)) return;
+
+            for (Resource resource : resources) {
+                String content = ResourceUtils.getContent(resource);
+
+                LogPosition logPosition = JSON.parseObject(content, LogPosition.class);
+                this.cursors.put(logPosition.getFlinkJobIdentity(), logPosition);
             }
 
-            @Override
-            public boolean match(String pattern, String path) {
-                return false;
-            }
-
-            @Override
-            public boolean matchStart(String pattern, String path) {
-                return false;
-            }
-
-            @Override
-            public String extractPathWithinPattern(String pattern, String path) {
-                return null;
-            }
-
-            @Override
-            public Map<String, String> extractUriTemplateVariables(String pattern, String path) {
-                return null;
-            }
-
-            @Override
-            public Comparator<String> getPatternComparator(String path) {
-                return null;
-            }
-
-            @Override
-            public String combine(String pattern1, String pattern2) {
-                return null;
-            }
-        });
-        Resource[] resources = resourcePatternResolver.getResources("file*:" + dataDir.getAbsolutePath());
-
+        } catch (IOException e) {
+            throw new MetaManagerException(e);
+        }
     }
 
     private File getDataFile(String flinkJobName) {

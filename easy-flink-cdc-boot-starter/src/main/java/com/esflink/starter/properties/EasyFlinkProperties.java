@@ -11,6 +11,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.core.env.Environment;
 
 import javax.annotation.PostConstruct;
+import java.io.File;
 
 /**
  * flink 数据库配置信息
@@ -59,9 +60,12 @@ public class EasyFlinkProperties {
 
         if (StringUtils.isBlank(meta.getDataDir())) {
             String dataDir = environment.resolvePlaceholders("${user.home}");
-            this.meta.setApplicationName(dataDir);
+            this.meta.setDataDir(dataDir);
         }
 
+        if (meta.getDataDir().endsWith(File.separator)) {
+            meta.setDataDir(meta.getDataDir().substring(0, meta.getDataDir().length() - 1));
+        }
     }
 
 
