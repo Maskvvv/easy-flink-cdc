@@ -1,10 +1,10 @@
 package com.esflink.starter.configuration;
 
 import com.esflink.starter.constants.BaseEsConstants;
-import com.esflink.starter.holder.FlinkListenerPropertiesHolder;
+import com.esflink.starter.holder.FlinkJobPropertiesHolder;
 import com.esflink.starter.properties.EasyFlinkOrdered;
 import com.esflink.starter.properties.EasyFlinkProperties;
-import com.esflink.starter.properties.FlinkListenerProperties;
+import com.esflink.starter.properties.FlinkJobProperties;
 import com.esflink.starter.properties.parser.DefaultFlinkListenerPropertiesParser;
 import com.esflink.starter.properties.parser.FlinkListenerPropertiesParser;
 import org.springframework.beans.BeansException;
@@ -32,7 +32,7 @@ import java.util.List;
 @Configuration
 @EnableConfigurationProperties(EasyFlinkProperties.class)
 @ConditionalOnProperty(name = BaseEsConstants.ENABLE_PREFIX, havingValue = "true", matchIfMissing = true)
-public class FlinkListenerPropertiesConfiguration implements ApplicationContextAware, BeanFactoryPostProcessor, Ordered {
+public class FlinkJobPropertiesConfiguration implements ApplicationContextAware, BeanFactoryPostProcessor, Ordered {
 
     @Autowired
     private EasyFlinkProperties easyFlinkProperties;
@@ -43,12 +43,12 @@ public class FlinkListenerPropertiesConfiguration implements ApplicationContextA
         // 获取配置文件 resource
         ResourceLoader resourceLoader = new DefaultResourceLoader();
         Resource resource = resourceLoader.getResource(BaseEsConstants.CONFIG_FILE);
-        // 解析 conf resource 为 FlinkListenerProperties
+        // 解析 conf resource 为 FlinkJobProperties
         FlinkListenerPropertiesParser flinkPropertiesParser = new DefaultFlinkListenerPropertiesParser();
-        List<FlinkListenerProperties> flinkListenerProperties = flinkPropertiesParser.getProperties(resource);
+        List<FlinkJobProperties> flinkJobProperties = flinkPropertiesParser.getProperties(resource);
 
-        // 注册 FlinkListenerProperties 到 FlinkListenerPropertiesHolder
-        FlinkListenerPropertiesHolder.registerAllProperties(flinkListenerProperties);
+        // 注册 FlinkJobProperties 到 FlinkJobPropertiesHolder
+        FlinkJobPropertiesHolder.registerAllProperties(flinkJobProperties);
     }
 
     @Override

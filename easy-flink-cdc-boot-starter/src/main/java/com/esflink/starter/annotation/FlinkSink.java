@@ -1,5 +1,6 @@
 package com.esflink.starter.annotation;
 
+import com.esflink.starter.properties.FlinkJobProperties;
 import com.esflink.starter.register.FlinkScannerRegister;
 import org.springframework.context.annotation.Import;
 
@@ -20,5 +21,11 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Import(FlinkScannerRegister.class)
 public @interface FlinkSink {
+
+    /**
+     * Flink Job Name
+     * <p>
+     * {@link FlinkJobProperties#name}
+     */
     String value();
 }

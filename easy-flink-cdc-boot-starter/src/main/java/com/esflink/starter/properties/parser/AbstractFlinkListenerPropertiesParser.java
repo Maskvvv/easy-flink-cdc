@@ -1,6 +1,6 @@
 package com.esflink.starter.properties.parser;
 
-import com.esflink.starter.properties.FlinkListenerProperties;
+import com.esflink.starter.properties.FlinkJobProperties;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ public abstract class AbstractFlinkListenerPropertiesParser implements FlinkList
 
     protected List<Field> getFlinkPropertiesFields() {
         List<String> filedNames = new ArrayList<>();
-        Class<FlinkListenerProperties> flinkPropertiesClass = FlinkListenerProperties.class;
+        Class<FlinkJobProperties> flinkPropertiesClass = FlinkJobProperties.class;
         Field[] fields = flinkPropertiesClass.getDeclaredFields();
 
         return Arrays.asList(fields);

@@ -7,7 +7,7 @@ package com.esflink.starter.properties;
  * @author zhouhongyin
  * @since 2023/3/5 22:28
  */
-public class FlinkListenerProperties {
+public class FlinkJobProperties {
     private String name;
 
     private String hostname;

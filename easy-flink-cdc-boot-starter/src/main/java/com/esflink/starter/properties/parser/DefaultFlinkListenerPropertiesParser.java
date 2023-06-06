@@ -1,6 +1,6 @@
 package com.esflink.starter.properties.parser;
 
-import com.esflink.starter.properties.FlinkListenerProperties;
+import com.esflink.starter.properties.FlinkJobProperties;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigObject;
@@ -24,7 +24,7 @@ public class DefaultFlinkListenerPropertiesParser extends AbstractFlinkListenerP
     public static final String NAME = "local";
 
     @Override
-    public List<FlinkListenerProperties> getProperties(Resource resource) {
+    public List<FlinkJobProperties> getProperties(Resource resource) {
         try (InputStreamReader reader = new InputStreamReader(resource.getInputStream())) {
             Config config = ConfigFactory.parseReader(reader).resolve();
 
@@ -35,13 +35,13 @@ public class DefaultFlinkListenerPropertiesParser extends AbstractFlinkListenerP
     }
 
     /**
-     * 解析 Config 为 FlinkListenerProperties
+     * 解析 Config 为 FlinkJobProperties
      *
      * @author zhouhongyin
      * @since 2023/5/23 17:37
      */
-    private List<FlinkListenerProperties> parser(Config config) throws IllegalAccessException {
-        List<FlinkListenerProperties> flinkListenerPropertiesList = new ArrayList<>();
+    private List<FlinkJobProperties> parser(Config config) throws IllegalAccessException {
+        List<FlinkJobProperties> flinkJobPropertiesList = new ArrayList<>();
 
         ConfigObject root = config.root();
         for (Map.Entry<String, ConfigValue> rootEntry : root.entrySet()) {
@@ -49,19 +49,19 @@ public class DefaultFlinkListenerPropertiesParser extends AbstractFlinkListenerP
             Config properties = config.getConfig(rootName);
 
             List<Field> flinkPropertiesFields = getFlinkPropertiesFields();
-            FlinkListenerProperties flinkListenerProperties = new FlinkListenerProperties();
-            flinkListenerProperties.setName(rootName);
+            FlinkJobProperties flinkJobProperties = new FlinkJobProperties();
+            flinkJobProperties.setName(rootName);
             for (Field filed : flinkPropertiesFields) {
                 String filedName = filed.getName();
                 String filedValue = properties.getString(filedName);
 
                 filed.setAccessible(true);
-                filed.set(flinkListenerProperties, filedValue);
+                filed.set(flinkJobProperties, filedValue);
             }
 
-            flinkListenerPropertiesList.add(flinkListenerProperties);
+            flinkJobPropertiesList.add(flinkJobProperties);
         }
-        return flinkListenerPropertiesList;
+        return flinkJobPropertiesList;
     }
 
     @Override
@@ -71,14 +71,14 @@ public class DefaultFlinkListenerPropertiesParser extends AbstractFlinkListenerP
 
     public static void main(String[] args) throws NoSuchFieldException, IllegalAccessException {
 
-        FlinkListenerProperties flinkListenerProperties = new FlinkListenerProperties();
+        FlinkJobProperties flinkJobProperties = new FlinkJobProperties();
 
-        Class<? extends FlinkListenerProperties> flinkPropertiesClass = flinkListenerProperties.getClass();
+        Class<? extends FlinkJobProperties> flinkPropertiesClass = flinkJobProperties.getClass();
         Field name = flinkPropertiesClass.getDeclaredField("name");
         name.setAccessible(true);
 
-        name.set(flinkListenerProperties, "1111");
-        System.out.println(flinkListenerProperties.getName());
+        name.set(flinkJobProperties, "1111");
+        System.out.println(flinkJobProperties.getName());
     }
 
 }

@@ -6,10 +6,10 @@ import com.esflink.starter.common.data.FlinkDataChangeSink;
 import com.esflink.starter.common.data.MysqlDeserialization;
 import com.esflink.starter.common.utils.LogUtils;
 import com.esflink.starter.constants.BaseEsConstants;
-import com.esflink.starter.holder.FlinkListenerPropertiesHolder;
+import com.esflink.starter.holder.FlinkJobPropertiesHolder;
 import com.esflink.starter.holder.FlinkSinkHolder;
 import com.esflink.starter.properties.EasyFlinkOrdered;
-import com.esflink.starter.properties.FlinkListenerProperties;
+import com.esflink.starter.properties.FlinkJobProperties;
 import com.esflink.starter.prox.FlinkSinkProxy;
 import com.ververica.cdc.connectors.mysql.MySqlSource;
 import com.ververica.cdc.connectors.mysql.table.StartupOptions;
@@ -39,7 +39,7 @@ import java.util.Map;
  */
 @Configuration
 @ConditionalOnProperty(name = BaseEsConstants.ENABLE_PREFIX, havingValue = "true", matchIfMissing = true)
-public class FlinkEventListenerConfiguration implements ApplicationContextAware, SmartInitializingSingleton, EnvironmentAware, Ordered {
+public class FlinkJobConfiguration implements ApplicationContextAware, SmartInitializingSingleton, EnvironmentAware, Ordered {
 
     private ApplicationContext applicationContext;
 
@@ -57,12 +57,12 @@ public class FlinkEventListenerConfiguration implements ApplicationContextAware,
     @Override
     public void afterSingletonsInstantiated() {
 
-        List<FlinkListenerProperties> flinkListenerProperties = FlinkListenerPropertiesHolder.getProperties();
+        List<FlinkJobProperties> flinkJobProperties = FlinkJobPropertiesHolder.getProperties();
 
         initSink();
 
         // 创建 flink listener
-        for (FlinkListenerProperties flinkProperty : flinkListenerProperties) {
+        for (FlinkJobProperties flinkProperty : flinkJobProperties) {
             try {
                 initFlinkListener(flinkProperty);
             } catch (Exception e) {
@@ -89,7 +89,7 @@ public class FlinkEventListenerConfiguration implements ApplicationContextAware,
         });
     }
 
-    private void initFlinkListener(FlinkListenerProperties flinkProperty) throws Exception {
+    private void initFlinkListener(FlinkJobProperties flinkProperty) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(1);
 
@@ -109,14 +109,14 @@ public class FlinkEventListenerConfiguration implements ApplicationContextAware,
     /**
      * 构造变更数据源
      */
-    private DebeziumSourceFunction<DataChangeInfo> buildDataChangeSource(FlinkListenerProperties flinkListenerProperties) {
+    private DebeziumSourceFunction<DataChangeInfo> buildDataChangeSource(FlinkJobProperties flinkJobProperties) {
         return MySqlSource.<DataChangeInfo>builder()
-                .hostname(flinkListenerProperties.getHostname())
-                .port(Integer.parseInt(flinkListenerProperties.getPort()))
-                .databaseList(flinkListenerProperties.getDatabaseList())
-                .tableList(flinkListenerProperties.getTableList())
-                .username(flinkListenerProperties.getUsername())
-                .password(flinkListenerProperties.getPassword())
+                .hostname(flinkJobProperties.getHostname())
+                .port(Integer.parseInt(flinkJobProperties.getPort()))
+                .databaseList(flinkJobProperties.getDatabaseList())
+                .tableList(flinkJobProperties.getTableList())
+                .username(flinkJobProperties.getUsername())
+                .password(flinkJobProperties.getPassword())
 
                 /**initial初始化快照,即全量导入后增量导入(检测更新数据写入)
                  * latest:只进行增量导入(不读取历史变化)

@@ -1,6 +1,6 @@
 package com.esflink.starter.properties.parser;
 
-import com.esflink.starter.properties.FlinkListenerProperties;
+import com.esflink.starter.properties.FlinkJobProperties;
 import org.springframework.core.io.Resource;
 
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
  */
 public interface FlinkListenerPropertiesParser {
 
-    List<FlinkListenerProperties> getProperties(Resource resource);
+    List<FlinkJobProperties> getProperties(Resource resource);
 
     String getName();
 }
