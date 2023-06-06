@@ -23,9 +23,9 @@ import java.lang.annotation.Target;
 public @interface FlinkSink {
 
     /**
-     * Flink Job Name
-     * <p>
-     * {@link FlinkJobProperties#name}
+     * <p>Flink Job Name</p>
+     *
+     * @see FlinkJobProperties#name
      */
     String value();
 }

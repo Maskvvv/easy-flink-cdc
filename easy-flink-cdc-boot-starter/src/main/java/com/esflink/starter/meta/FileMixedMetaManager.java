@@ -5,15 +5,21 @@ import com.alibaba.fastjson.JSON;
 import com.esflink.starter.common.exception.MetaManagerException;
 import com.esflink.starter.common.utils.LogUtils;
 import com.esflink.starter.common.utils.ResourceUtils;
+import com.esflink.starter.holder.FlinkJobPropertiesHolder;
+import com.esflink.starter.properties.EasyFlinkProperties;
+import com.esflink.starter.properties.FlinkJobProperties;
 import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -40,16 +46,21 @@ import java.util.logging.Logger;
  * @version 1.0.4
  */
 @Component
-public class FileMixedMetaManager extends MemoryMetaManager implements MetaManager {
+public class FileMixedMetaManager extends MemoryMetaManager implements MetaManager, Serializable {
 
     private static final Logger logger = Logger.getLogger(FileMixedMetaManager.class.getName());
 
 
     private static final Charset charset = StandardCharsets.UTF_8;
+
+    @Autowired
+    private EasyFlinkProperties easyFlinkProperties;
+
     /**
      * 游标文件存放路径
      */
     private File dataDir;
+    private String dataFilePrefix = "easy-flink-cdc";
     private String dataFileName = "meta.dat";
     private static final String dataDirEndsWith = "/**/meta.dat";
 
@@ -82,6 +93,7 @@ public class FileMixedMetaManager extends MemoryMetaManager implements MetaManag
         }
 
         dataFileCaches = new ConcurrentHashMap<>();
+        initDataFileCaches();
 
         updateCursorTasks = new CopyOnWriteArraySet<>();
 
@@ -106,6 +118,18 @@ public class FileMixedMetaManager extends MemoryMetaManager implements MetaManag
                 period,
                 period,
                 TimeUnit.MILLISECONDS);
+    }
+
+    private void initDataFileCaches() {
+        List<FlinkJobProperties> properties = FlinkJobPropertiesHolder.getProperties();
+        if (CollectionUtils.isEmpty(properties)) return;
+
+        for (FlinkJobProperties property : properties) {
+            EasyFlinkProperties.Meta meta = easyFlinkProperties.getMeta();
+            FlinkJobIdentity flinkJobIdentity = FlinkJobIdentity.generate(meta, property.getName());
+            File file = new File(dataDir, File.separator + flinkJobIdentity.getApplicationName() + flinkJobIdentity.getPort() + File.separator + flinkJobIdentity.getFlinkJobName() + File.separator + dataFileName);
+            dataFileCaches.put(flinkJobIdentity, file);
+        }
     }
 
     public void stop() {
@@ -171,6 +195,7 @@ public class FileMixedMetaManager extends MemoryMetaManager implements MetaManag
 
 
     public void setDataDir(String dataDir) {
+        dataDir = dataDir + File.separator + dataFilePrefix;
         this.dataDir = new File(dataDir);
     }
 

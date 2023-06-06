@@ -1,6 +1,5 @@
 # Auto Configure
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.esflink.starter.configuration.FlinkSinkConfiguration,\
   com.esflink.starter.configuration.FlinkJobPropertiesConfiguration,\
   com.esflink.starter.configuration.FlinkJobConfiguration,\
   com.esflink.starter.configuration.FlinkZookeeperConfiguration,\

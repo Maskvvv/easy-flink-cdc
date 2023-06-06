@@ -1,10 +1,13 @@
 package com.esflink.starter.properties;
 
 
+import com.esflink.starter.configuration.FlinkJobPropertiesConfiguration;
+
 /**
- * flink 数据库配置信息
+ * flink job 配置信息
  *
  * @author zhouhongyin
+ * @see FlinkJobPropertiesConfiguration
  * @since 2023/3/5 22:28
  */
 public class FlinkJobProperties {

@@ -11,15 +11,18 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class MemoryMetaManager extends AbstractMetaLifeCycle implements MetaManager {
     protected Map<FlinkJobIdentity, LogPosition> cursors;
+    protected Map<String, FlinkJobIdentity> flinkJobs;
 
     public void start() {
         super.start();
         cursors = new ConcurrentHashMap<>();
+        flinkJobs = new ConcurrentHashMap<>();
     }
 
     public void stop() {
         super.stop();
         cursors.clear();
+        flinkJobs.clear();
     }
 
 
@@ -31,6 +34,5 @@ public class MemoryMetaManager extends AbstractMetaLifeCycle implements MetaMana
     @Override
     public void updateCursor(FlinkJobIdentity flinkJobIdentity, LogPosition position) {
         cursors.put(flinkJobIdentity, position);
-
     }
 }

@@ -35,7 +35,6 @@ public class MetaManagerConfiguration implements Ordered, EnvironmentAware {
     private Environment environment;
 
     @Primary
-    @ConditionalOnProperty
     @Bean(initMethod = "start", destroyMethod = "stop")
     public FileMixedMetaManager fileMixedMetaManager() {
         FileMixedMetaManager fileMixedMetaManager = new FileMixedMetaManager();

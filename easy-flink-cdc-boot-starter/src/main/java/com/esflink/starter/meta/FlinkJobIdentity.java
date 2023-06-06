@@ -1,6 +1,8 @@
 package com.esflink.starter.meta;
 
 
+import com.esflink.starter.properties.EasyFlinkProperties;
+
 import java.util.Objects;
 
 /**
@@ -52,5 +54,17 @@ public class FlinkJobIdentity {
     @Override
     public int hashCode() {
         return Objects.hash(applicationName, port, flinkJobName);
+    }
+
+    public static FlinkJobIdentity generate(EasyFlinkProperties.Meta meta, String flinkJobName) {
+        String applicationName = meta.getApplicationName();
+        String port = meta.getPort();
+
+        FlinkJobIdentity flinkJobIdentity = new FlinkJobIdentity();
+        flinkJobIdentity.setApplicationName(applicationName);
+        flinkJobIdentity.setPort(port);
+        flinkJobIdentity.setFlinkJobName(flinkJobName);
+        return flinkJobIdentity;
+
     }
 }

@@ -8,17 +8,22 @@ import com.esflink.starter.common.utils.LogUtils;
 import com.esflink.starter.constants.BaseEsConstants;
 import com.esflink.starter.holder.FlinkJobPropertiesHolder;
 import com.esflink.starter.holder.FlinkSinkHolder;
+import com.esflink.starter.meta.FlinkJobIdentity;
+import com.esflink.starter.meta.MetaManager;
 import com.esflink.starter.properties.EasyFlinkOrdered;
+import com.esflink.starter.properties.EasyFlinkProperties;
 import com.esflink.starter.properties.FlinkJobProperties;
 import com.esflink.starter.prox.FlinkSinkProxy;
 import com.ververica.cdc.connectors.mysql.MySqlSource;
 import com.ververica.cdc.connectors.mysql.table.StartupOptions;
 import com.ververica.cdc.debezium.DebeziumSourceFunction;
+import org.apache.flink.api.common.ExecutionConfig;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.SmartInitializingSingleton;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -26,6 +31,7 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
+import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Proxy;
 import java.util.List;
@@ -44,6 +50,9 @@ public class FlinkJobConfiguration implements ApplicationContextAware, SmartInit
     private ApplicationContext applicationContext;
 
     private Environment environment;
+
+    @Autowired
+    private EasyFlinkProperties easyFlinkProperties;
 
     //@Autowired
     //private ZkClientx zkClientx;
@@ -64,23 +73,26 @@ public class FlinkJobConfiguration implements ApplicationContextAware, SmartInit
         // 创建 flink listener
         for (FlinkJobProperties flinkProperty : flinkJobProperties) {
             try {
-                initFlinkListener(flinkProperty);
+                initFlinkJob(flinkProperty);
             } catch (Exception e) {
                 e.printStackTrace();
-                throw new BeanCreationException("initFlinkListener失败");
+                throw new BeanCreationException("init FlinkListener failed!");
             }
         }
 
     }
 
+    /**
+     * 初始化 sink
+     */
     private void initSink() {
+
         Map<String, Object> beansWithAnnotation = applicationContext.getBeansWithAnnotation(FlinkSink.class);
         beansWithAnnotation.forEach((key, value) -> {
             if (value instanceof FlinkDataChangeSink) {
                 try {
                     FlinkSink flinkSink = value.getClass().getAnnotation(FlinkSink.class);
-                    FlinkDataChangeSink sinkProxyInstance = (FlinkDataChangeSink) Proxy.newProxyInstance(value.getClass().getClassLoader(), value.getClass().getInterfaces(), new FlinkSinkProxy(value));
-                    FlinkSinkHolder.registerSink(sinkProxyInstance, flinkSink);
+                    FlinkSinkHolder.registerSink((FlinkDataChangeSink) value, flinkSink);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -89,19 +101,33 @@ public class FlinkJobConfiguration implements ApplicationContextAware, SmartInit
         });
     }
 
-    private void initFlinkListener(FlinkJobProperties flinkProperty) throws Exception {
+    private void initFlinkJob(FlinkJobProperties flinkProperty) throws Exception {
+        List<FlinkDataChangeSink> dataChangeSinks = FlinkSinkHolder.getSink(flinkProperty.getName());
+        if (CollectionUtils.isEmpty(dataChangeSinks)) return;
+
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(1);
+        ExecutionConfig config = env.getConfig();
+        config.setClosureCleanerLevel(ExecutionConfig.ClosureCleanerLevel.NONE);
 
         DebeziumSourceFunction<DataChangeInfo> dataChangeInfoMySqlSource = buildDataChangeSource(flinkProperty);
         DataStream<DataChangeInfo> streamSource = env
                 .addSource(dataChangeInfoMySqlSource)
                 .setParallelism(1);
 
-        List<FlinkDataChangeSink> dataChangeSinks = FlinkSinkHolder.getSink(flinkProperty.getName());
         for (FlinkDataChangeSink dataChangeSink : dataChangeSinks) {
             streamSource.addSink(dataChangeSink);
         }
+        MetaManager metaManager = applicationContext.getBean(MetaManager.class);
+
+        // TODO-zhouhy 2023/6/6 serialization failed
+        FlinkJobIdentity flinkJobIdentity = FlinkJobIdentity.generate(easyFlinkProperties.getMeta(), flinkProperty.getName());
+        FlinkDataChangeSink sinkProxyInstance = (FlinkDataChangeSink) Proxy.newProxyInstance(
+                FlinkDataChangeSink.class.getClassLoader(),
+                new Class<?>[]{FlinkDataChangeSink.class},
+                new FlinkSinkProxy(metaManager, flinkJobIdentity));
+        streamSource.addSink(sinkProxyInstance);
+
         env.executeAsync();
         LogUtils.formatInfo("FlinkListener %s 启动成功！", flinkProperty.getName());
     }
