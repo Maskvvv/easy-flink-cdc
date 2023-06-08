@@ -120,6 +120,12 @@ public class FileMixedMetaManager extends MemoryMetaManager implements MetaManag
                 TimeUnit.MILLISECONDS);
     }
 
+    @Override
+    public void updateCursor(FlinkJobIdentity flinkJobIdentity, LogPosition position) {
+        super.updateCursor(flinkJobIdentity, position);
+        updateCursorTasks.add(flinkJobIdentity);
+    }
+
     private void initDataFileCaches() {
         List<FlinkJobProperties> properties = FlinkJobPropertiesHolder.getProperties();
         if (CollectionUtils.isEmpty(properties)) return;
