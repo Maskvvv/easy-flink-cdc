@@ -2,12 +2,14 @@ package com.esflink.starter.meta;
 
 import com.ververica.cdc.connectors.mysql.table.StartupOptions;
 
+import java.io.Serializable;
+
 /**
  * mysql binlog读取位置
  *
  * @see StartupOptions#timestamp(long)
  */
-public class LogPosition {
+public class LogPosition implements Serializable {
 
     private FlinkJobIdentity flinkJobIdentity;
 

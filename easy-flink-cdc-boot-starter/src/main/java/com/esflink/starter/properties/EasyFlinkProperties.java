@@ -12,6 +12,7 @@ import org.springframework.core.env.Environment;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
+import java.io.Serializable;
 
 /**
  * flink 数据库配置信息
@@ -22,7 +23,7 @@ import java.io.File;
 @EnableConfigurationProperties(EasyFlinkProperties.class)
 @ConfigurationProperties(value = BaseEsConstants.PREFIX)
 @ConditionalOnProperty(name = BaseEsConstants.ENABLE_PREFIX, havingValue = "true", matchIfMissing = true)
-public class EasyFlinkProperties {
+public class EasyFlinkProperties implements Serializable {
 
     private String enable;
 

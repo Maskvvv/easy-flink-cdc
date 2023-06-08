@@ -1,10 +1,9 @@
 package com.esflink.starter.prox;
 
 import com.esflink.starter.common.data.DataChangeInfo;
-import com.esflink.starter.common.utils.LogUtils;
+import com.esflink.starter.holder.FlinkJobBus;
 import com.esflink.starter.meta.FlinkJobIdentity;
-import com.esflink.starter.meta.LogPosition;
-import com.esflink.starter.meta.MetaManager;
+import org.apache.flink.streaming.api.functions.sink.SinkFunction;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
@@ -18,26 +17,18 @@ import java.lang.reflect.Method;
  */
 public class FlinkSinkProxy implements InvocationHandler, Serializable {
 
-    private transient final MetaManager metaManager;
-    private transient final FlinkJobIdentity flinkJobIdentity;
+    private final FlinkJobIdentity flinkJobIdentity;
 
-    public FlinkSinkProxy(MetaManager metaManager, FlinkJobIdentity flinkJobIdentity) {
-        this.metaManager = metaManager;
+    public FlinkSinkProxy(FlinkJobIdentity flinkJobIdentity) {
         this.flinkJobIdentity = flinkJobIdentity;
     }
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    public Object invoke(Object proxy, Method method, Object[] args) throws Exception {
         if (!"invoke".equals(method.getName())) return null;
-
         DataChangeInfo dataChangeInfo = (DataChangeInfo) args[0];
-
-        LogPosition logPosition = new LogPosition();
-        logPosition.setFlinkJobIdentity(flinkJobIdentity);
-        logPosition.setStartupTimestampMillis(dataChangeInfo.getChangeTime());
-        metaManager.updateCursor(flinkJobIdentity, logPosition);
-        LogUtils.info("flink job: " + flinkJobIdentity.getFlinkJobName() + ", update on " + dataChangeInfo.getChangeTime());
-
+        SinkFunction.Context context = (SinkFunction.Context) args[1];
+        FlinkJobBus.post(flinkJobIdentity, dataChangeInfo, context);
         return null;
     }
 

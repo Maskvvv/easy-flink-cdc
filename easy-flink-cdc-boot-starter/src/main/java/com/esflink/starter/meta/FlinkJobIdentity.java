@@ -3,6 +3,7 @@ package com.esflink.starter.meta;
 
 import com.esflink.starter.properties.EasyFlinkProperties;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -11,7 +12,7 @@ import java.util.Objects;
  * @author zhouhongyin
  * @since 2023/5/31 23:07
  */
-public class FlinkJobIdentity {
+public class FlinkJobIdentity implements Serializable {
 
     private String applicationName;
 

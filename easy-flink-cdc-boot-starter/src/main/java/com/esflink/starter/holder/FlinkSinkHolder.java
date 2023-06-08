@@ -26,8 +26,8 @@ public class FlinkSinkHolder {
         SINK_MAP.put(value, sinkList);
     }
 
-    public static List<FlinkDataChangeSink> getSink(String listenerName) {
-        return SINK_MAP.get(listenerName);
+    public static List<FlinkDataChangeSink> getSink(String flinkJobName) {
+        return SINK_MAP.get(flinkJobName);
     }
 
 }

@@ -9,7 +9,6 @@ import com.esflink.starter.constants.BaseEsConstants;
 import com.esflink.starter.holder.FlinkJobPropertiesHolder;
 import com.esflink.starter.holder.FlinkSinkHolder;
 import com.esflink.starter.meta.FlinkJobIdentity;
-import com.esflink.starter.meta.MetaManager;
 import com.esflink.starter.properties.EasyFlinkOrdered;
 import com.esflink.starter.properties.EasyFlinkProperties;
 import com.esflink.starter.properties.FlinkJobProperties;
@@ -17,7 +16,6 @@ import com.esflink.starter.prox.FlinkSinkProxy;
 import com.ververica.cdc.connectors.mysql.MySqlSource;
 import com.ververica.cdc.connectors.mysql.table.StartupOptions;
 import com.ververica.cdc.debezium.DebeziumSourceFunction;
-import org.apache.flink.api.common.ExecutionConfig;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.springframework.beans.BeansException;
@@ -70,13 +68,13 @@ public class FlinkJobConfiguration implements ApplicationContextAware, SmartInit
 
         initSink();
 
-        // 创建 flink listener
+        // 创建 flink job
         for (FlinkJobProperties flinkProperty : flinkJobProperties) {
             try {
                 initFlinkJob(flinkProperty);
             } catch (Exception e) {
                 e.printStackTrace();
-                throw new BeanCreationException("init FlinkListener failed!");
+                throw new BeanCreationException("init Flink job failed!");
             }
         }
 
@@ -107,25 +105,17 @@ public class FlinkJobConfiguration implements ApplicationContextAware, SmartInit
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(1);
-        ExecutionConfig config = env.getConfig();
-        config.setClosureCleanerLevel(ExecutionConfig.ClosureCleanerLevel.NONE);
 
         DebeziumSourceFunction<DataChangeInfo> dataChangeInfoMySqlSource = buildDataChangeSource(flinkProperty);
         DataStream<DataChangeInfo> streamSource = env
                 .addSource(dataChangeInfoMySqlSource)
                 .setParallelism(1);
 
-        for (FlinkDataChangeSink dataChangeSink : dataChangeSinks) {
-            streamSource.addSink(dataChangeSink);
-        }
-        MetaManager metaManager = applicationContext.getBean(MetaManager.class);
-
-        // TODO-zhouhy 2023/6/6 serialization failed
         FlinkJobIdentity flinkJobIdentity = FlinkJobIdentity.generate(easyFlinkProperties.getMeta(), flinkProperty.getName());
         FlinkDataChangeSink sinkProxyInstance = (FlinkDataChangeSink) Proxy.newProxyInstance(
                 FlinkDataChangeSink.class.getClassLoader(),
                 new Class<?>[]{FlinkDataChangeSink.class},
-                new FlinkSinkProxy(metaManager, flinkJobIdentity));
+                new FlinkSinkProxy(flinkJobIdentity));
         streamSource.addSink(sinkProxyInstance);
 
         env.executeAsync();

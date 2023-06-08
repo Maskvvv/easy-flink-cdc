@@ -1,5 +1,7 @@
 package com.esflink.starter.meta;
 
+import com.esflink.starter.holder.FlinkJobBus;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -17,6 +19,8 @@ public class MemoryMetaManager extends AbstractMetaLifeCycle implements MetaMana
         super.start();
         cursors = new ConcurrentHashMap<>();
         flinkJobs = new ConcurrentHashMap<>();
+
+        FlinkJobBus.setMetaManager(this);
     }
 
     public void stop() {
