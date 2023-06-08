@@ -57,4 +57,7 @@ public class FlinkJobBus {
         FlinkJobBus.metaManager = metaManager;
     }
 
+    public static MetaManager getMetaManager() {
+        return metaManager;
+    }
 }

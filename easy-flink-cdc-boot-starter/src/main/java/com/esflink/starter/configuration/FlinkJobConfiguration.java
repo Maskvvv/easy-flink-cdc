@@ -6,9 +6,12 @@ import com.esflink.starter.common.data.FlinkDataChangeSink;
 import com.esflink.starter.common.data.MysqlDeserialization;
 import com.esflink.starter.common.utils.LogUtils;
 import com.esflink.starter.constants.BaseEsConstants;
+import com.esflink.starter.holder.FlinkJobBus;
 import com.esflink.starter.holder.FlinkJobPropertiesHolder;
 import com.esflink.starter.holder.FlinkSinkHolder;
 import com.esflink.starter.meta.FlinkJobIdentity;
+import com.esflink.starter.meta.LogPosition;
+import com.esflink.starter.meta.MetaManager;
 import com.esflink.starter.properties.EasyFlinkOrdered;
 import com.esflink.starter.properties.EasyFlinkProperties;
 import com.esflink.starter.properties.FlinkJobProperties;
@@ -102,16 +105,16 @@ public class FlinkJobConfiguration implements ApplicationContextAware, SmartInit
     private void initFlinkJob(FlinkJobProperties flinkProperty) throws Exception {
         List<FlinkDataChangeSink> dataChangeSinks = FlinkSinkHolder.getSink(flinkProperty.getName());
         if (CollectionUtils.isEmpty(dataChangeSinks)) return;
+        FlinkJobIdentity flinkJobIdentity = FlinkJobIdentity.generate(easyFlinkProperties.getMeta(), flinkProperty.getName());
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(1);
 
-        DebeziumSourceFunction<DataChangeInfo> dataChangeInfoMySqlSource = buildDataChangeSource(flinkProperty);
+        DebeziumSourceFunction<DataChangeInfo> dataChangeInfoMySqlSource = buildDataChangeSource(flinkProperty, flinkJobIdentity);
         DataStream<DataChangeInfo> streamSource = env
                 .addSource(dataChangeInfoMySqlSource)
                 .setParallelism(1);
 
-        FlinkJobIdentity flinkJobIdentity = FlinkJobIdentity.generate(easyFlinkProperties.getMeta(), flinkProperty.getName());
         FlinkDataChangeSink sinkProxyInstance = (FlinkDataChangeSink) Proxy.newProxyInstance(
                 FlinkDataChangeSink.class.getClassLoader(),
                 new Class<?>[]{FlinkDataChangeSink.class},
@@ -125,7 +128,15 @@ public class FlinkJobConfiguration implements ApplicationContextAware, SmartInit
     /**
      * 构造变更数据源
      */
-    private DebeziumSourceFunction<DataChangeInfo> buildDataChangeSource(FlinkJobProperties flinkJobProperties) {
+    private DebeziumSourceFunction<DataChangeInfo> buildDataChangeSource(FlinkJobProperties flinkJobProperties, FlinkJobIdentity flinkJobIdentity) {
+        MetaManager metaManager = FlinkJobBus.getMetaManager();
+        LogPosition cursor = metaManager.getCursor(flinkJobIdentity);
+        StartupOptions startupOptions = null;
+        if (cursor != null) {
+            startupOptions = StartupOptions.timestamp(cursor.getStartupTimestampMillis());
+        }
+
+
         return MySqlSource.<DataChangeInfo>builder()
                 .hostname(flinkJobProperties.getHostname())
                 .port(Integer.parseInt(flinkJobProperties.getPort()))
@@ -145,7 +156,9 @@ public class FlinkJobConfiguration implements ApplicationContextAware, SmartInit
                  */
                 //.startupOptions(StartupOptions.specificOffset("binlog.000005", 1957205))
                 //.startupOptions(StartupOptions.timestamp(1684762706000L))
-                .startupOptions(StartupOptions.latest())
+
+
+                .startupOptions(startupOptions != null ? startupOptions : StartupOptions.latest())
                 .deserializer(new MysqlDeserialization())
                 .serverTimeZone("GMT+8")
                 .build();
