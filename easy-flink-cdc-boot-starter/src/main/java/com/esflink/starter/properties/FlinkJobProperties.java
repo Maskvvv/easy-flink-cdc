@@ -2,6 +2,8 @@ package com.esflink.starter.properties;
 
 
 import com.esflink.starter.configuration.FlinkJobPropertiesConfiguration;
+import com.ververica.cdc.connectors.mysql.table.StartupMode;
+import com.ververica.cdc.connectors.mysql.table.StartupOptions;
 
 /**
  * flink job 配置信息
@@ -25,6 +27,22 @@ public class FlinkJobProperties {
 
     private String password;
 
+    /**
+     * <p>
+     * MySQL CDC使用者的启动模式
+     * </p>
+     *
+     * <pre>
+     * INITIAL: 初始化快照,即全量导入后增量导入(检测更新数据写入)
+     * LATEST: 只进行增量导入(不读取历史变化)
+     * TIMESTAMP: 指定时间戳进行数据导入(大于等于指定时间错读取数据)
+     * </pre>
+     *
+     * @see StartupMode
+     */
+    private String startupMode;
+
+    private Long startupTimestampMillis;
 
     public String getName() {
         return name;
@@ -82,5 +100,27 @@ public class FlinkJobProperties {
         this.password = password;
     }
 
+    public String getStartupMode() {
+        return startupMode;
+    }
 
+    public void setStartupMode(String startupMode) {
+        this.startupMode = startupMode;
+    }
+
+    public Long getStartupTimestampMillis() {
+        return startupTimestampMillis;
+    }
+
+    public void setStartupTimestampMillis(Long startupTimestampMillis) {
+        this.startupTimestampMillis = startupTimestampMillis;
+    }
+
+    public StartupOptions getStartupOptions() {
+        String startupMode = this.startupMode;
+        if ("INITIAL".equals(startupMode)) return StartupOptions.initial();
+        if ("LATEST".equals(startupMode)) return StartupOptions.latest();
+        if ("TIMESTAMP".equals(startupMode)) return StartupOptions.timestamp(startupTimestampMillis);
+        return StartupOptions.latest();
+    }
 }

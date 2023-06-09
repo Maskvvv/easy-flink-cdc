@@ -2,6 +2,7 @@ package com.esflink.starter.properties.parser;
 
 import com.esflink.starter.properties.FlinkJobProperties;
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigObject;
 import com.typesafe.config.ConfigValue;
@@ -53,7 +54,12 @@ public class DefaultFlinkListenerPropertiesParser extends AbstractFlinkListenerP
             flinkJobProperties.setName(rootName);
             for (Field filed : flinkPropertiesFields) {
                 String filedName = filed.getName();
-                String filedValue = properties.getString(filedName);
+                String filedValue = "";
+                try {
+                    filedValue = properties.getString(filedName);
+                } catch (ConfigException.Missing exception) {
+                    continue;
+                }
 
                 filed.setAccessible(true);
                 filed.set(flinkJobProperties, filedValue);
