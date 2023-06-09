@@ -66,6 +66,14 @@ public class FlinkJobIdentity implements Serializable {
         flinkJobIdentity.setPort(port);
         flinkJobIdentity.setFlinkJobName(flinkJobName);
         return flinkJobIdentity;
+    }
 
+    @Override
+    public String toString() {
+        return "FlinkJobIdentity{" +
+                "applicationName='" + applicationName + '\'' +
+                ", port='" + port + '\'' +
+                ", flinkJobName='" + flinkJobName + '\'' +
+                '}';
     }
 }

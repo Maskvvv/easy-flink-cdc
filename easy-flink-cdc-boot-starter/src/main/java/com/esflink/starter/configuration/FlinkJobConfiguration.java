@@ -4,7 +4,6 @@ import com.esflink.starter.annotation.FlinkSink;
 import com.esflink.starter.common.data.DataChangeInfo;
 import com.esflink.starter.common.data.FlinkDataChangeSink;
 import com.esflink.starter.common.data.MysqlDeserialization;
-import com.esflink.starter.common.utils.LogUtils;
 import com.esflink.starter.constants.BaseEsConstants;
 import com.esflink.starter.holder.FlinkJobBus;
 import com.esflink.starter.holder.FlinkJobPropertiesHolder;
@@ -21,6 +20,8 @@ import com.ververica.cdc.connectors.mysql.table.StartupOptions;
 import com.ververica.cdc.debezium.DebeziumSourceFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.SmartInitializingSingleton;
@@ -47,6 +48,7 @@ import java.util.Map;
 @Configuration
 @ConditionalOnProperty(name = BaseEsConstants.ENABLE_PREFIX, havingValue = "true", matchIfMissing = true)
 public class FlinkJobConfiguration implements ApplicationContextAware, SmartInitializingSingleton, EnvironmentAware, Ordered {
+    Logger logger = LoggerFactory.getLogger(FlinkJobConfiguration.class.getName());
 
     private ApplicationContext applicationContext;
 
@@ -122,7 +124,8 @@ public class FlinkJobConfiguration implements ApplicationContextAware, SmartInit
         streamSource.addSink(sinkProxyInstance);
 
         env.executeAsync();
-        LogUtils.formatInfo("FlinkListener %s 启动成功！", flinkProperty.getName());
+
+        logger.info("Flink Job [{}] 启动成功！", flinkProperty.getName());
     }
 
     /**

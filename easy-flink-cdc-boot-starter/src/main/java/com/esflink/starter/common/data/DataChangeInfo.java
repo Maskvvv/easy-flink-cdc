@@ -104,4 +104,18 @@ public class DataChangeInfo {
     public void setChangeTime(Long changeTime) {
         this.changeTime = changeTime;
     }
+
+    @Override
+    public String toString() {
+        return "DataChangeInfo{" +
+                "beforeData='" + beforeData + '\'' +
+                ", afterData='" + afterData + '\'' +
+                ", eventType=" + eventType +
+                ", fileName='" + fileName + '\'' +
+                ", filePos=" + filePos +
+                ", database='" + database + '\'' +
+                ", tableName='" + tableName + '\'' +
+                ", changeTime=" + changeTime +
+                '}';
+    }
 }
