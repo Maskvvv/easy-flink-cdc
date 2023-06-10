@@ -1,6 +1,173 @@
 <html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Test Baidu</title>
+
+    <style>
+        * {
+
+            margin: 0;
+
+            padding: 0;
+
+        }
+
+        .container {
+
+            height: 70px;
+
+            width: 800px;
+
+            margin: 100px auto 0 auto;
+
+        }
+
+        .parent {
+
+            position: relative;
+
+        }
+
+        .search {
+
+            width: 300px;
+
+            height: 40px;
+
+            border-radius: 18px;
+
+            outline: none;
+
+            border: 1px solid #ccc;
+
+            padding-left: 20px;
+
+            position: absolute;
+
+        }
+
+        .btn {
+
+            height: 35px;
+
+            width: 35px;
+
+            position: absolute;
+
+            background: url("images/topbar.png") no-repeat -2px -99px;
+
+            top: 6px;
+
+            left: 285px;
+
+            border: none;
+
+            outline: none;
+
+            cursor: pointer;
+
+        }
+
+    </style>
+    <script>
+        window.onload=function(){
+            //获取文本输入框
+            var textElment = document.getElementById("text");
+            //获取下提示框
+            var div = document.getElementById("tips");
+            textElment.onkeyup=function(){
+                //获取用户输入的值
+                var text = textElment.value;
+                //如果文本框中没有值，则下拉框被隐藏，不显示
+                if(text==""){
+                    div.style.display="none";
+                    return;
+                }
+                //获取XMLHttpRequest对象
+                var xhr = new XMLHttpRequest();
+                //编写回调函数
+                xhr.onreadystatechange=function(){
+                    //判断回调的条件是否准备齐全
+                    if(xhr.readyState===4){
+                        if(xhr.status===200){
+                            //取的服务器端传回的数据
+                            var str = xhr.responseText;
+
+                            //判断传回的数据是否为空,若是则直接返回，不显示
+                            if(str==""){
+                                return;
+                            }
+                            //我们将会在服务器端把数据用 , 隔开，当然这里也可以使用json
+                            var result = str.split(",");
+
+                            var childs = "";
+                            //遍历结果集，将结果集中的每一条数据用一个div显示，把所有的div放入到childs中
+                            for(var i=0; i<result.length;i++){
+                                childs += "<div οnclick='Write(this)' οnmοuseοut='recoverColorwhenMouseout(this)' οnmοuseοver='changeColorwhenMouseover(this)'>"+result[i]+"</div>";
+                            }
+                            //把childs 这div集合放入到下拉提示框的父div中，上面我们以获取了
+                            div.innerHTML=childs;
+                            div.style.display="block";
+
+                        }
+                    }
+                }
+
+                //创建与服务器的连接
+                xhr.open("GET","test?text="+text);
+
+
+                //发送
+                xhr.send();
+            }
+        }
+        //鼠标悬停时改变div的颜色
+        function changeColorwhenMouseover(div){
+            div.style.backgroundColor="blue";
+        }
+        //鼠标移出时回复div颜色
+        function recoverColorwhenMouseout(div){
+            div.style.backgroundColor="";
+        }
+        //当鼠标带点击div时，将div的值赋给输入文本框
+        function Write(div){
+            //将div中的值赋给文本框
+            document.getElementById("text").value=div.innerHTML;
+
+            //让下拉提示框消失
+
+            div.parentNode.style.display="none";
+        }
+    </script>
+</head>
+
 <body>
-<h1>hello word!!!</h1>
-<p>this is a html page</p>
+<!--
+ 文本输入框
+-->
+<div id="serach">
+    <input type="text" name="text" id="text" class="search" />
+    <input type="submit" value="搜索" />
+</div>
+
+<!--<div class="serach">-->
+
+<!--    <form action="" class="parent">-->
+
+<!--        <input type="text" class="search" placeholder="搜索">-->
+
+<!--        <input type="button" name="" id="" class="btn">-->
+
+<!--    </form>-->
+
+<!--</div>-->
+
+<!--
+ 提示下拉框
+-->
+<div id="tips" style="display: none;
+  	width: 171px; border: 1px solid pink";>
+</div>
+
 </body>
 </html>

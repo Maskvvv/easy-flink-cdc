@@ -22,10 +22,11 @@ public class CompanyDocument {
     /**
      * 公司名称
      */
-    @IndexField(fieldType = FieldType.KEYWORD_TEXT, analyzer = Analyzer.IK_MAX_WORD)
+    @IndexField(fieldType = FieldType.COMPLETION)
     private String name;
     /**
      * 公司简称
      */
+    @IndexField(fieldType = FieldType.COMPLETION)
     private String nickName;
 }
