@@ -93,17 +93,20 @@
                             //取的服务器端传回的数据
                             var str = xhr.responseText;
 
+                            var childs = "";
                             //判断传回的数据是否为空,若是则直接返回，不显示
                             if(str==""){
+                                div.innerHTML="<div></div>";
+                                div.style.display="block";
                                 return;
                             }
                             //我们将会在服务器端把数据用 , 隔开，当然这里也可以使用json
                             var result = str.split(",");
 
-                            var childs = "";
+
                             //遍历结果集，将结果集中的每一条数据用一个div显示，把所有的div放入到childs中
                             for(var i=0; i<result.length;i++){
-                                childs += "<div οnclick='Write(this)' οnmοuseοut='recoverColorwhenMouseout(this)' οnmοuseοver='changeColorwhenMouseover(this)'>"+result[i]+"</div>";
+                                childs += "<div style='border-bottom: 1px solid pink' οnclick='Write(this)' οnmοuseοut='recoverColorwhenMouseout(this)' οnmοuseοver='changeColorwhenMouseover(this)'>"+result[i]+"</div>";
                             }
                             //把childs 这div集合放入到下拉提示框的父div中，上面我们以获取了
                             div.innerHTML=childs;
@@ -145,8 +148,8 @@
 <!--
  文本输入框
 -->
-<div id="serach">
-    <input type="text" name="text" id="text" " />
+<div id="serach" style="margin-left: 500px">
+    <input type="text" name="text" id="text"  />
     <input type="submit" value="搜索" />
 </div>
 
@@ -166,7 +169,7 @@
  提示下拉框
 -->
 <div id="tips" style="display: none;
-  	width: 171px; border: 1px solid pink";>
+  	width: 300px; border: 1px solid pink; margin-left: 500px"; >
 </div>
 
 </body>
