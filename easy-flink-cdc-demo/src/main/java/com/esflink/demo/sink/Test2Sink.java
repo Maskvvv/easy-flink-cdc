@@ -8,7 +8,7 @@ import com.esflink.starter.common.data.FlinkDataChangeSink;
  * @author zhouhongyin
  * @since 2023/5/23 14:13
  */
-@FlinkSink("ourea")
+//@FlinkSink("ourea")
 public class Test2Sink implements FlinkDataChangeSink {
     @Override
     public void invoke(DataChangeInfo value, Context context) throws Exception {

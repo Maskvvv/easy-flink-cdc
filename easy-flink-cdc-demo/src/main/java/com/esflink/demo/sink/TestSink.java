@@ -9,7 +9,7 @@ import com.esflink.starter.properties.EasyFlinkProperties;
  * @author zhouhongyin
  * @since 2023/5/23 14:13
  */
-@FlinkSink("ourea")
+//@FlinkSink("ourea")
 public class TestSink implements FlinkDataChangeSink {
     private transient EasyFlinkProperties properties = new EasyFlinkProperties();
 
