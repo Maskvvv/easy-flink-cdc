@@ -22,12 +22,12 @@ import java.util.concurrent.ConcurrentHashMap;
 public class FlinkJobBus {
     public static final String BEAN_NAME = "flinkJobBus";
 
-    private static final Map<FlinkSinkProxy, FlinkJobIdentity> flinkJobIdentityMap = new ConcurrentHashMap<>();
+    private static final Map<FlinkSinkProxy, FlinkJobIdentity> FLINK_JOB_IDENTITY_MAP = new ConcurrentHashMap<>();
     private static MetaManager metaManager;
 
 
     public static void registerFlinkJobIdentity(FlinkSinkProxy flinkSinkProxy, FlinkJobIdentity flinkJobIdentity) {
-        flinkJobIdentityMap.put(flinkSinkProxy, flinkJobIdentity);
+        FLINK_JOB_IDENTITY_MAP.put(flinkSinkProxy, flinkJobIdentity);
     }
 
     /**
@@ -35,7 +35,6 @@ public class FlinkJobBus {
      */
     public static void post(FlinkJobIdentity flinkJobIdentity, DataChangeInfo dataChangeInfo, SinkFunction.Context context) throws Exception {
         List<FlinkDataChangeSink> sink = FlinkSinkHolder.getSink(flinkJobIdentity.getFlinkJobName());
-
         if (sink == null) return;
 
         for (FlinkDataChangeSink dataChangeSink : sink) {

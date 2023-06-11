@@ -1,6 +1,7 @@
 package com.esflink.starter.properties;
 
 
+import com.esflink.starter.common.utils.LogUtils;
 import com.esflink.starter.constants.BaseEsConstants;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.StringUtils;
@@ -67,6 +68,8 @@ public class EasyFlinkProperties implements Serializable {
         if (meta.getDataDir().endsWith(File.separator)) {
             meta.setDataDir(meta.getDataDir().substring(0, meta.getDataDir().length() - 1));
         }
+
+        LogUtils.formatInfo("meta dataDir is: [%s]", meta.getDataDir());
     }
 
 

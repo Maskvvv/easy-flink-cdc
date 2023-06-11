@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -99,7 +100,7 @@ public class FileMixedMetaManager extends MemoryMetaManager implements MetaManag
 
         loadCursor();
 
-        executor = Executors.newScheduledThreadPool(1);
+        executor = Executors.newScheduledThreadPool(1, new CustomizableThreadFactory("easy-flink-cdc-meta-file-"));
         // 启动定时工作任务
         executor.scheduleAtFixedRate(() -> {
                     List<FlinkJobIdentity> tasks = new ArrayList<>(updateCursorTasks);
