@@ -26,7 +26,7 @@ import java.io.IOException;
 @FlinkSink("ourea")
 public class EsSink implements FlinkDataChangeSink {
 
-    @Autowired
+    @Autowired(required = false)
     private CompanyDocumentMapper companyDocumentMapper;
 
     @Override

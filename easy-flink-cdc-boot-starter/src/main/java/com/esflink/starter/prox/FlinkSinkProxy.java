@@ -38,6 +38,7 @@ public class FlinkSinkProxy implements InvocationHandler, Serializable {
             logger.info("flinkJobIdentity: {}, dataChangeInfo: {}", flinkJobIdentity, dataChangeInfo);
         } catch (Exception e) {
             logger.error("flinkJobIdentity: {}, dataChangeInfo: {}, error: {}", flinkJobIdentity, dataChangeInfo, e);
+            e.printStackTrace();
         }
         return null;
     }

@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 @RequestMapping("company")
 public class CompanyController {
 
-    @Resource
+    @Autowired(required = false)
     private CompanyDocumentMapper companyDocumentMapper;
 
     @Autowired
@@ -51,7 +51,7 @@ public class CompanyController {
         searchRequest.source().suggest(new SuggestBuilder()
                 .addSuggestion("suggest",
                         SuggestBuilders.completionSuggestion("keyword")
-                                .prefix(key).skipDuplicates(true).size(10)));
+                                .prefix(key).analyzer("ik_pinyin_analyzer").skipDuplicates(true).size(10)));
 
         SearchResponse search = companyDocumentMapper.search(searchRequest, RequestOptions.DEFAULT);
         Suggest suggest = search.getSuggest();

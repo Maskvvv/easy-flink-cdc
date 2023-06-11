@@ -25,11 +25,12 @@ public class MysqlDeserialization implements DebeziumDeserializationSchema<DataC
     public static final String TS_MS = "ts_ms";
     public static final String BIN_FILE = "file";
     public static final String POS = "pos";
-    public static final String CREATE = "CREATE";
     public static final String BEFORE = "before";
     public static final String AFTER = "after";
     public static final String SOURCE = "source";
+    public static final String CREATE = "CREATE";
     public static final String UPDATE = "UPDATE";
+    public static final String DELETE = "DELETE";
 
     /**
      * 反序列化数据,转为变更JSON对象
