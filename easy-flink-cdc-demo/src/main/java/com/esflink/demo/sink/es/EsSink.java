@@ -5,17 +5,8 @@ import com.esflink.demo.document.CompanyDocument;
 import com.esflink.demo.mapper.es.CompanyDocumentMapper;
 import com.esflink.starter.annotation.FlinkSink;
 import com.esflink.starter.common.data.DataChangeInfo;
-import com.esflink.starter.common.data.FlinkDataChangeSink;
-import org.apache.http.HttpHost;
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.common.xcontent.XContentType;
+import com.esflink.starter.common.data.FlinkJobSink;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.io.IOException;
 
 /**
  * <p> 同步信息到 es </p>
@@ -24,7 +15,7 @@ import java.io.IOException;
  * @since 2023/6/9 17:11
  */
 @FlinkSink("ourea")
-public class EsSink implements FlinkDataChangeSink {
+public class EsSink implements FlinkJobSink {
 
     @Autowired(required = false)
     private CompanyDocumentMapper companyDocumentMapper;

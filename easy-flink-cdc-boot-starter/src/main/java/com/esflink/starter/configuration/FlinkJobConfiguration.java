@@ -2,7 +2,7 @@ package com.esflink.starter.configuration;
 
 import com.esflink.starter.annotation.FlinkSink;
 import com.esflink.starter.common.data.DataChangeInfo;
-import com.esflink.starter.common.data.FlinkDataChangeSink;
+import com.esflink.starter.common.data.FlinkJobSink;
 import com.esflink.starter.common.data.MysqlDeserialization;
 import com.esflink.starter.constants.BaseEsConstants;
 import com.esflink.starter.holder.FlinkJobBus;
@@ -92,10 +92,10 @@ public class FlinkJobConfiguration implements ApplicationContextAware, SmartInit
 
         Map<String, Object> beansWithAnnotation = applicationContext.getBeansWithAnnotation(FlinkSink.class);
         beansWithAnnotation.forEach((key, value) -> {
-            if (value instanceof FlinkDataChangeSink) {
+            if (value instanceof FlinkJobSink) {
                 try {
                     FlinkSink flinkSink = value.getClass().getAnnotation(FlinkSink.class);
-                    FlinkSinkHolder.registerSink((FlinkDataChangeSink) value, flinkSink);
+                    FlinkSinkHolder.registerSink((FlinkJobSink) value, flinkSink);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -105,7 +105,7 @@ public class FlinkJobConfiguration implements ApplicationContextAware, SmartInit
     }
 
     private void initFlinkJob(FlinkJobProperties flinkProperty) throws Exception {
-        List<FlinkDataChangeSink> dataChangeSinks = FlinkSinkHolder.getSink(flinkProperty.getName());
+        List<FlinkJobSink> dataChangeSinks = FlinkSinkHolder.getSink(flinkProperty.getName());
         if (CollectionUtils.isEmpty(dataChangeSinks)) return;
         FlinkJobIdentity flinkJobIdentity = FlinkJobIdentity.generate(easyFlinkProperties.getMeta(), flinkProperty.getName());
 
@@ -117,9 +117,9 @@ public class FlinkJobConfiguration implements ApplicationContextAware, SmartInit
                 .addSource(dataChangeInfoMySqlSource)
                 .setParallelism(1);
 
-        FlinkDataChangeSink sinkProxyInstance = (FlinkDataChangeSink) Proxy.newProxyInstance(
-                FlinkDataChangeSink.class.getClassLoader(),
-                new Class<?>[]{FlinkDataChangeSink.class},
+        FlinkJobSink sinkProxyInstance = (FlinkJobSink) Proxy.newProxyInstance(
+                FlinkJobSink.class.getClassLoader(),
+                new Class<?>[]{FlinkJobSink.class},
                 new FlinkSinkProxy(flinkJobIdentity));
         streamSource.addSink(sinkProxyInstance);
 

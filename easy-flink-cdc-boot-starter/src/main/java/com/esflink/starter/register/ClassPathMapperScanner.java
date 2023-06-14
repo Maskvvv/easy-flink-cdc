@@ -1,7 +1,7 @@
 package com.esflink.starter.register;
 
 import com.esflink.starter.annotation.FlinkSink;
-import com.esflink.starter.common.data.FlinkDataChangeSink;
+import com.esflink.starter.common.data.FlinkJobSink;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
@@ -36,7 +36,7 @@ public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner imple
             String className = metadataReader.getClassMetadata().getClassName();
             try {
                 Class<?> clazz = Class.forName(className);
-                return FlinkDataChangeSink.class.isAssignableFrom(clazz);
+                return FlinkJobSink.class.isAssignableFrom(clazz);
             } catch (ClassNotFoundException e) {
                 logger.debug("sink not found" + e);
             }

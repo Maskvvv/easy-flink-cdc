@@ -19,8 +19,16 @@ public class FlinkJobProperties {
 
     private String port;
 
+    /**
+     * <p>数据库名</p>
+     * <p>example: database1,database2</p>
+     */
     private String databaseList;
 
+    /**
+     * <p>数据库表名</p>
+     * <p>example: database1.table1,database2.table2</p>
+     */
     private String tableList;
 
     private String username;
@@ -33,9 +41,9 @@ public class FlinkJobProperties {
      * </p>
      *
      * <pre>
-     * INITIAL: 初始化快照,即全量导入后增量导入(检测更新数据写入)
-     * LATEST: 只进行增量导入(不读取历史变化)
-     * TIMESTAMP: 指定时间戳进行数据导入(大于等于指定时间错读取数据)
+     *     <li>INITIAL: 初始化快照,即全量导入后增量导入(检测更新数据写入)</li>
+     *     <li>LATEST: 只进行增量导入(不读取历史变化)</li>
+     *     <li>TIMESTAMP: 指定时间戳进行数据导入(大于等于指定时间错读取数据)</li>
      * </pre>
      *
      * @see StartupMode

@@ -1,7 +1,7 @@
 package com.esflink.starter.holder;
 
 import com.esflink.starter.common.data.DataChangeInfo;
-import com.esflink.starter.common.data.FlinkDataChangeSink;
+import com.esflink.starter.common.data.FlinkJobSink;
 import com.esflink.starter.common.utils.LogUtils;
 import com.esflink.starter.meta.FlinkJobIdentity;
 import com.esflink.starter.meta.LogPosition;
@@ -34,11 +34,13 @@ public class FlinkJobBus {
      * 发送通知
      */
     public static void post(FlinkJobIdentity flinkJobIdentity, DataChangeInfo dataChangeInfo, SinkFunction.Context context) throws Exception {
-        List<FlinkDataChangeSink> sink = FlinkSinkHolder.getSink(flinkJobIdentity.getFlinkJobName());
-        if (sink == null) return;
+        List<FlinkJobSink> sinks = FlinkSinkHolder.getSink(flinkJobIdentity.getFlinkJobName());
+        if (sinks == null) return;
 
-        for (FlinkDataChangeSink dataChangeSink : sink) {
-            dataChangeSink.invoke(dataChangeInfo, context);
+        for (FlinkJobSink sink : sinks) {
+            if (FlinkJobSinkDatabaseFilter.filter(sink, dataChangeInfo)) {
+                sink.invoke(dataChangeInfo, context);
+            }
         }
 
         updateCursor(dataChangeInfo, flinkJobIdentity);

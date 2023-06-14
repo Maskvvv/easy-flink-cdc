@@ -9,7 +9,7 @@ import org.apache.flink.streaming.api.functions.sink.SinkFunction;
  * @author zhouhongyin
  * @since 2023/3/5 23:04
  */
-public interface FlinkDataChangeSink extends SinkFunction<DataChangeInfo> {
+public interface FlinkJobSink extends SinkFunction<DataChangeInfo> {
     @Override
     void invoke(DataChangeInfo value, Context context) throws Exception;
 }

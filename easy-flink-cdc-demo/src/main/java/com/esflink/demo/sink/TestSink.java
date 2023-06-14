@@ -1,8 +1,7 @@
 package com.esflink.demo.sink;
 
-import com.esflink.starter.annotation.FlinkSink;
 import com.esflink.starter.common.data.DataChangeInfo;
-import com.esflink.starter.common.data.FlinkDataChangeSink;
+import com.esflink.starter.common.data.FlinkJobSink;
 import com.esflink.starter.properties.EasyFlinkProperties;
 
 /**
@@ -10,7 +9,7 @@ import com.esflink.starter.properties.EasyFlinkProperties;
  * @since 2023/5/23 14:13
  */
 //@FlinkSink("ourea")
-public class TestSink implements FlinkDataChangeSink {
+public class TestSink implements FlinkJobSink {
     private transient EasyFlinkProperties properties = new EasyFlinkProperties();
 
     @Override
