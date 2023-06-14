@@ -1,13 +1,15 @@
 package com.esflink.starter.holder;
 
 import com.esflink.starter.common.data.DataChangeInfo;
+import com.esflink.starter.common.data.DataChangeInfo.EventType;
 import com.esflink.starter.common.data.FlinkJobSink;
-import com.esflink.starter.common.utils.LogUtils;
 import com.esflink.starter.meta.FlinkJobIdentity;
 import com.esflink.starter.meta.LogPosition;
 import com.esflink.starter.meta.MetaManager;
 import com.esflink.starter.prox.FlinkSinkProxy;
 import org.apache.flink.streaming.api.functions.sink.SinkFunction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -21,6 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class FlinkJobBus {
     public static final String BEAN_NAME = "flinkJobBus";
+    public static final Logger logger = LoggerFactory.getLogger(FlinkJobBus.class);
 
     private static final Map<FlinkSinkProxy, FlinkJobIdentity> FLINK_JOB_IDENTITY_MAP = new ConcurrentHashMap<>();
     private static MetaManager metaManager;
@@ -39,11 +42,31 @@ public class FlinkJobBus {
 
         for (FlinkJobSink sink : sinks) {
             if (FlinkJobSinkDatabaseFilter.filter(sink, dataChangeInfo)) {
-                sink.invoke(dataChangeInfo, context);
+                invoke(sink, dataChangeInfo, context);
             }
         }
 
         updateCursor(dataChangeInfo, flinkJobIdentity);
+    }
+
+    private static void invoke(FlinkJobSink sink, DataChangeInfo dataChangeInfo, SinkFunction.Context context) {
+        try {
+            EventType eventType = dataChangeInfo.getEventType();
+            sink.invoke(dataChangeInfo, context);
+
+            if (eventType.equals(EventType.CREATE)) {
+                sink.insert(dataChangeInfo, context);
+            } else if (eventType.equals(EventType.UPDATE)) {
+                sink.update(dataChangeInfo, context);
+            } else if (eventType.equals(EventType.DELETE)) {
+                sink.delete(dataChangeInfo, context);
+            }
+
+        } catch (Exception e) {
+            logger.error("sink: [{}], dataChangeInfo: {}, error: {}", sink.getClass().getName(), dataChangeInfo, e);
+            e.printStackTrace();
+            sink.errorHandle(dataChangeInfo, context, e);
+        }
     }
 
     private static void updateCursor(DataChangeInfo dataChangeInfo, FlinkJobIdentity flinkJobIdentity) {
@@ -51,7 +74,7 @@ public class FlinkJobBus {
         logPosition.setFlinkJobIdentity(flinkJobIdentity);
         logPosition.setStartupTimestampMillis(dataChangeInfo.getChangeTime());
         metaManager.updateCursor(flinkJobIdentity, logPosition);
-        LogUtils.info("flink job: " + flinkJobIdentity.getFlinkJobName() + ", update on " + dataChangeInfo.getChangeTime());
+        logger.info("flink job: [{}], update on [{}]", flinkJobIdentity.getFlinkJobName(), dataChangeInfo.getChangeTime());
     }
 
     public static void setMetaManager(MetaManager metaManager) {

@@ -10,6 +10,27 @@ import org.apache.flink.streaming.api.functions.sink.SinkFunction;
  * @since 2023/3/5 23:04
  */
 public interface FlinkJobSink extends SinkFunction<DataChangeInfo> {
+
     @Override
-    void invoke(DataChangeInfo value, Context context) throws Exception;
+    default void invoke(DataChangeInfo value, Context context) throws Exception {
+
+    }
+
+    default void insert(DataChangeInfo value, Context context) throws Exception {
+
+    }
+
+    default void update(DataChangeInfo value, Context context) throws Exception {
+
+    }
+
+    default void delete(DataChangeInfo value, Context context) throws Exception {
+
+    }
+
+    default void errorHandle(DataChangeInfo value, Context context, Throwable throwable) {
+
+    }
+
+
 }

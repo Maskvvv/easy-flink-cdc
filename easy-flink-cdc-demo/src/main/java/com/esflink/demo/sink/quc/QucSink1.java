@@ -21,4 +21,8 @@ public class QucSink1 implements FlinkJobSink {
         logger.info("QucSink1: {}", value);
 
     }
+
+    public static void main(String[] args) {
+        System.out.println(QucSink1.class.getName());
+    }
 }
