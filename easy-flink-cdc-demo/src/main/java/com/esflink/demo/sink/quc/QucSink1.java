@@ -18,11 +18,30 @@ public class QucSink1 implements FlinkJobSink {
 
     @Override
     public void invoke(DataChangeInfo value, Context context) throws Exception {
-        logger.info("QucSink1: {}", value);
+        //logger.info("QucSink1-invoke: {}", value);
 
     }
 
-    public static void main(String[] args) {
-        System.out.println(QucSink1.class.getName());
+    @Override
+    public void insert(DataChangeInfo value, Context context) throws Exception {
+        logger.info("QucSink1-insert: {}", value);
+    }
+
+    @Override
+    public void update(DataChangeInfo value, Context context) throws Exception {
+        logger.info("QucSink1-update: {}", value);
+    }
+
+    @Override
+    public void delete(DataChangeInfo value, Context context) throws Exception {
+        logger.info("QucSink1-delete: {}", value);
+        throw new RuntimeException("啊，发生错误了！");
+    }
+
+    @Override
+    public void handleError(DataChangeInfo value, Context context, Throwable throwable) {
+
+        logger.error("QucSink1-errorHandle: {}", value);
+        logger.error("QucSink1-errorHandle: {}", throwable.getMessage());
     }
 }

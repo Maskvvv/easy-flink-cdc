@@ -28,7 +28,7 @@ public interface FlinkJobSink extends SinkFunction<DataChangeInfo> {
 
     }
 
-    default void errorHandle(DataChangeInfo value, Context context, Throwable throwable) {
+    default void handleError(DataChangeInfo value, Context context, Throwable throwable) {
 
     }
 

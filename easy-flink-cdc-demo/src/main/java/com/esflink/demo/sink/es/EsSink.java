@@ -14,14 +14,22 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author zhouhongyin
  * @since 2023/6/9 17:11
  */
-@FlinkSink("ourea")
+@FlinkSink(value = "ourea", database = "ourea", table = "ourea.company")
 public class EsSink implements FlinkJobSink {
 
     @Autowired(required = false)
     private CompanyDocumentMapper companyDocumentMapper;
 
     @Override
-    public void invoke(DataChangeInfo value, Context context) throws Exception {
+    public void update(DataChangeInfo value, Context context) throws Exception {
+        String afterData = value.getAfterData();
+        CompanyDocument companyDocument = JSON.parseObject(afterData, CompanyDocument.class);
+        companyDocument.setKeyword(companyDocument.getName());
+        companyDocumentMapper.insert(companyDocument);
+    }
+
+    @Override
+    public void insert(DataChangeInfo value, Context context) throws Exception {
         String afterData = value.getAfterData();
         CompanyDocument companyDocument = JSON.parseObject(afterData, CompanyDocument.class);
         companyDocument.setKeyword(companyDocument.getName());

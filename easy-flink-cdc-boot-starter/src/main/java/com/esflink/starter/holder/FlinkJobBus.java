@@ -65,7 +65,7 @@ public class FlinkJobBus {
         } catch (Exception e) {
             logger.error("sink: [{}], dataChangeInfo: {}, error: {}", sink.getClass().getName(), dataChangeInfo, e);
             e.printStackTrace();
-            sink.errorHandle(dataChangeInfo, context, e);
+            sink.handleError(dataChangeInfo, context, e);
         }
     }
 
