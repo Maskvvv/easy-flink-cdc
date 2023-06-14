@@ -1,6 +1,7 @@
 package com.esflink.starter.common.data;
 
 import com.alibaba.fastjson.JSONObject;
+import com.esflink.starter.common.data.DataChangeInfo.EventType;
 import com.google.common.base.CaseFormat;
 import com.ververica.cdc.debezium.DebeziumDeserializationSchema;
 import io.debezium.data.Envelope;
@@ -28,9 +29,9 @@ public class MysqlDeserialization implements DebeziumDeserializationSchema<DataC
     public static final String BEFORE = "before";
     public static final String AFTER = "after";
     public static final String SOURCE = "source";
-    public static final String CREATE = "CREATE";
-    public static final String UPDATE = "UPDATE";
-    public static final String DELETE = "DELETE";
+    public static final EventType CREATE = EventType.CREATE;
+    public static final EventType UPDATE = EventType.UPDATE;
+    public static final EventType DELETE = EventType.DELETE;
 
     /**
      * 反序列化数据,转为变更JSON对象
@@ -52,7 +53,7 @@ public class MysqlDeserialization implements DebeziumDeserializationSchema<DataC
         //5.获取操作类型  CREATE UPDATE DELETE
         Envelope.Operation operation = Envelope.operationFor(sourceRecord);
         String type = operation.toString().toUpperCase();
-        int eventType = type.equals(CREATE) ? 1 : UPDATE.equals(type) ? 2 : 3;
+        EventType eventType = type.equals(CREATE.getName()) ? CREATE : type.equals(UPDATE.getName()) ? UPDATE : DELETE;
         dataChangeInfo.setEventType(eventType);
         dataChangeInfo.setFileName(Optional.ofNullable(source.get(BIN_FILE)).map(Object::toString).orElse(""));
         dataChangeInfo.setFilePos(Optional.ofNullable(source.get(POS)).map(x -> Integer.parseInt(x.toString())).orElse(0));

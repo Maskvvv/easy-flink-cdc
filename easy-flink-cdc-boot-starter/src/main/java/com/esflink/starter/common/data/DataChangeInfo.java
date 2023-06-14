@@ -19,7 +19,7 @@ public class DataChangeInfo {
     /**
      * 变更类型 1新增 2修改 3删除
      */
-    private Integer eventType;
+    private EventType eventType;
     /**
      * binlog文件名
      */
@@ -57,11 +57,11 @@ public class DataChangeInfo {
         this.afterData = afterData;
     }
 
-    public Integer getEventType() {
+    public EventType getEventType() {
         return eventType;
     }
 
-    public void setEventType(Integer eventType) {
+    public void setEventType(EventType eventType) {
         this.eventType = eventType;
     }
 
@@ -117,5 +117,36 @@ public class DataChangeInfo {
                 ", tableName='" + tableName + '\'' +
                 ", changeTime=" + changeTime +
                 '}';
+    }
+
+    public enum EventType {
+        CREATE("CREATE", 1),
+        UPDATE("UPDATE", 2),
+        DELETE("DELETE", 3),
+        ;
+        private String name;
+        private Integer value;
+
+
+        EventType(String name, Integer value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String toString() {
+            return "EventType{" +
+                    "name='" + name + '\'' +
+                    ", value=" + value +
+                    '}';
+        }
     }
 }
