@@ -136,7 +136,7 @@ public class FlinkJobConfiguration implements ApplicationContextAware, SmartInit
         LogPosition cursor = metaManager.getCursor(flinkJobIdentity);
         StartupOptions startupOptions = null;
         if (cursor != null) {
-            startupOptions = StartupOptions.timestamp(cursor.getStartupTimestampMillis());
+            startupOptions = StartupOptions.timestamp(cursor.getStartupTimestampMillis() + 1);
         }
 
         return MySqlSource.<DataChangeInfo>builder()

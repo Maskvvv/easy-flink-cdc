@@ -59,7 +59,9 @@ public class MysqlDeserialization implements DebeziumDeserializationSchema<DataC
         dataChangeInfo.setFilePos(Optional.ofNullable(source.get(POS)).map(x -> Integer.parseInt(x.toString())).orElse(0));
         dataChangeInfo.setDatabase(database);
         dataChangeInfo.setTableName(tableName);
-        dataChangeInfo.setChangeTime(Optional.ofNullable(struct.get(TS_MS)).map(x -> Long.parseLong(x.toString())).orElseGet(System::currentTimeMillis));
+        //Object value = struct.get(TS_MS);
+        Object value = source.get(TS_MS);
+        dataChangeInfo.setChangeTime(Optional.ofNullable(value).map(x -> Long.parseLong(x.toString())).orElseGet(System::currentTimeMillis));
         //7.输出数据
         collector.collect(dataChangeInfo);
     }
