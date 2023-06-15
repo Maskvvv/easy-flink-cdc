@@ -146,6 +146,7 @@ public class FlinkJobConfiguration implements ApplicationContextAware, SmartInit
                 .tableList(flinkJobProperties.getTableList())
                 .username(flinkJobProperties.getUsername())
                 .password(flinkJobProperties.getPassword())
+                .serverId(flinkJobProperties.getServerId())
 
                 /*initial初始化快照,即全量导入后增量导入(检测更新数据写入)
                  * latest:只进行增量导入(不读取历史变化)
@@ -153,7 +154,7 @@ public class FlinkJobConfiguration implements ApplicationContextAware, SmartInit
                  */
                 .startupOptions(startupOptions != null ? startupOptions : flinkJobProperties.getStartupOptions())
                 .deserializer(new MysqlDeserialization())
-                .serverTimeZone("GMT+8")
+                .serverTimeZone(flinkJobProperties.getServerTimeZone())
                 .build();
     }
 

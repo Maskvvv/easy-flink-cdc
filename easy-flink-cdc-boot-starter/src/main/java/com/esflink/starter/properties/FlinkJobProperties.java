@@ -2,6 +2,7 @@ package com.esflink.starter.properties;
 
 
 import com.esflink.starter.configuration.FlinkJobPropertiesConfiguration;
+import com.ververica.cdc.connectors.mysql.MySqlSource;
 import com.ververica.cdc.connectors.mysql.table.StartupMode;
 import com.ververica.cdc.connectors.mysql.table.StartupOptions;
 
@@ -22,18 +23,27 @@ public class FlinkJobProperties {
     /**
      * <p>数据库名</p>
      * <p>example: database1,database2</p>
+     *
+     * @see MySqlSource.Builder#databaseList
      */
     private String databaseList;
 
     /**
      * <p>数据库表名</p>
      * <p>example: database1.table1,database2.table2</p>
+     *
+     * @see MySqlSource.Builder#tableList
      */
     private String tableList;
 
     private String username;
 
     private String password;
+
+    /**
+     * @see MySqlSource.Builder#serverTimeZone
+     */
+    private String serverTimeZone = "GMT+8";
 
     /**
      * <p>
@@ -51,6 +61,13 @@ public class FlinkJobProperties {
     private String startupMode;
 
     private Long startupTimestampMillis;
+
+    /**
+     * serverId
+     *
+     * @see MySqlSource.Builder#serverId
+     */
+    private Integer serverId;
 
     public String getName() {
         return name;
@@ -122,6 +139,22 @@ public class FlinkJobProperties {
 
     public void setStartupTimestampMillis(Long startupTimestampMillis) {
         this.startupTimestampMillis = startupTimestampMillis;
+    }
+
+    public String getServerTimeZone() {
+        return serverTimeZone;
+    }
+
+    public void setServerTimeZone(String serverTimeZone) {
+        this.serverTimeZone = serverTimeZone;
+    }
+
+    public Integer getServerId() {
+        return serverId;
+    }
+
+    public void setServerId(Integer serverId) {
+        this.serverId = serverId;
     }
 
     public StartupOptions getStartupOptions() {
