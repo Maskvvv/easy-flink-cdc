@@ -120,6 +120,7 @@ public class DataChangeInfo {
     }
 
     public enum EventType {
+        READ("READ", 0),
         CREATE("CREATE", 1),
         UPDATE("UPDATE", 2),
         DELETE("DELETE", 3),

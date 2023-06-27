@@ -54,11 +54,11 @@ public class FlinkJobBus {
             EventType eventType = dataChangeInfo.getEventType();
             sink.invoke(dataChangeInfo, context);
 
-            if (eventType.equals(EventType.CREATE)) {
+            if (EventType.CREATE.equals(eventType)) {
                 sink.insert(dataChangeInfo, context);
-            } else if (eventType.equals(EventType.UPDATE)) {
+            } else if (EventType.UPDATE.equals(eventType)) {
                 sink.update(dataChangeInfo, context);
-            } else if (eventType.equals(EventType.DELETE)) {
+            } else if (EventType.DELETE.equals(eventType)) {
                 sink.delete(dataChangeInfo, context);
             }
 

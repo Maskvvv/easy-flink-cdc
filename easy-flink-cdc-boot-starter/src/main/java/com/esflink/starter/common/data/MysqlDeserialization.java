@@ -29,6 +29,7 @@ public class MysqlDeserialization implements DebeziumDeserializationSchema<DataC
     public static final String BEFORE = "before";
     public static final String AFTER = "after";
     public static final String SOURCE = "source";
+    public static final EventType READ = EventType.READ;
     public static final EventType CREATE = EventType.CREATE;
     public static final EventType UPDATE = EventType.UPDATE;
     public static final EventType DELETE = EventType.DELETE;
@@ -53,7 +54,7 @@ public class MysqlDeserialization implements DebeziumDeserializationSchema<DataC
         //5.获取操作类型  CREATE UPDATE DELETE
         Envelope.Operation operation = Envelope.operationFor(sourceRecord);
         String type = operation.toString().toUpperCase();
-        EventType eventType = type.equals(CREATE.getName()) ? CREATE : type.equals(UPDATE.getName()) ? UPDATE : DELETE;
+        EventType eventType = handleEventType(type);
         dataChangeInfo.setEventType(eventType);
         dataChangeInfo.setFileName(Optional.ofNullable(source.get(BIN_FILE)).map(Object::toString).orElse(""));
         dataChangeInfo.setFilePos(Optional.ofNullable(source.get(POS)).map(x -> Integer.parseInt(x.toString())).orElse(0));
@@ -66,10 +67,22 @@ public class MysqlDeserialization implements DebeziumDeserializationSchema<DataC
         collector.collect(dataChangeInfo);
     }
 
+    private EventType handleEventType(String type) {
+        EventType eventType = null;
+        if (type.equals(CREATE.getName()) || type.equals(READ.getName())) {
+            eventType = CREATE;
+        } else if (type.equals(UPDATE.getName())) {
+            eventType = UPDATE;
+        } else if (type.equals(DELETE.getName())) {
+            eventType = DELETE;
+        }
+        return eventType;
+    }
+
     /**
      * 从原始数据获取出变更之前或之后的数据
      *
-     * @param value 变更数据
+     * @param value        变更数据
      * @param fieldElement 属性名
      */
     private JSONObject getJsonObject(Struct value, String fieldElement) {

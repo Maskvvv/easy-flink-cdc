@@ -146,7 +146,7 @@ public class FlinkJobConfiguration implements ApplicationContextAware, SmartInit
                 .tableList(flinkJobProperties.getTableList())
                 .username(flinkJobProperties.getUsername())
                 .password(flinkJobProperties.getPassword())
-                .serverId(flinkJobProperties.getServerId())
+                //.serverId(flinkJobProperties.getServerId())
 
                 /*initial初始化快照,即全量导入后增量导入(检测更新数据写入)
                  * latest:只进行增量导入(不读取历史变化)
