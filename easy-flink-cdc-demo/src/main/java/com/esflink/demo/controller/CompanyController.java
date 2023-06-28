@@ -7,7 +7,6 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
-import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.suggest.Suggest;
 import org.elasticsearch.search.suggest.SuggestBuilder;
@@ -42,17 +41,13 @@ public class CompanyController {
 
         List<String> rest = new ArrayList<>();
 
-        searchRequest.source().suggest(new SuggestBuilder()
+        SuggestBuilder suggestBuilder = new SuggestBuilder()
                 .addSuggestion("suggest",
                         SuggestBuilders.completionSuggestion("keyword")
-                                .prefix(key).analyzer("ik_pinyin_analyzer").skipDuplicates(true).size(10)));
+                                .prefix(key).analyzer("ik_pinyin_analyzer").skipDuplicates(true).size(10));
 
+        searchRequest.source().suggest(suggestBuilder);
 
-        HighlightBuilder highlightBuilder = new HighlightBuilder();
-        highlightBuilder.preTags("<front color='red'>");
-        highlightBuilder.postTags("</front>");
-        highlightBuilder.field("keyword");
-        searchRequest.source().highlighter(highlightBuilder);
 
         SearchResponse search = companyDocumentMapper.search(searchRequest, RequestOptions.DEFAULT);
         Suggest suggest = search.getSuggest();

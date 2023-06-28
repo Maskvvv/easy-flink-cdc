@@ -95,29 +95,33 @@
 
                             var childs = "";
                             //判断传回的数据是否为空,若是则直接返回，不显示
-                            if(str==""){
-                                div.innerHTML="<div></div>";
-                                div.style.display="block";
+                            if (str == "") {
+                                div.innerHTML = "<div></div>";
+                                div.style.display = "block";
                                 return;
                             }
                             //我们将会在服务器端把数据用 , 隔开，当然这里也可以使用json
                             var result = str.split(",");
-
+                            var resultJson = JSON.parse(xhr.responseText);
+                            console.log(resultJson)
 
                             //遍历结果集，将结果集中的每一条数据用一个div显示，把所有的div放入到childs中
-                            for(var i=0; i<result.length;i++){
-                                childs += "<div style='border-bottom: 1px solid pink' οnclick='Write(this)' οnmοuseοut='recoverColorwhenMouseout(this)' οnmοuseοver='changeColorwhenMouseover(this)'>"+result[i]+"</div>";
+                            for (var i = 0; i < resultJson.length; i++) {
+                                var suggest = resultJson[i];
+                                childs += "<div style='border-bottom: 1px solid pink' οnclick='Write(this)' οnmοuseοut='recoverColorwhenMouseout(this)' οnmοuseοver='changeColorwhenMouseover(this)'>"
+                                    + suggest.name + (suggest.type === 1 ? "（企业）" : "（职位）")
+                                    + "</div>";
                             }
                             //把childs 这div集合放入到下拉提示框的父div中，上面我们以获取了
-                            div.innerHTML=childs;
-                            div.style.display="block";
+                            div.innerHTML = childs;
+                            div.style.display = "block";
 
                         }
                     }
                 }
 
                 //创建与服务器的连接
-                xhr.open("GET","company/suggest?key="+text);
+                xhr.open("GET", "ourea_home/suggest?key=" + text);
 
 
                 //发送
