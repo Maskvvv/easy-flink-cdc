@@ -68,6 +68,9 @@
 
         }
 
+        em {
+            color: red;
+        }
     </style>
     <script>
         window.onload=function(){
@@ -109,7 +112,7 @@
                             for (var i = 0; i < resultJson.length; i++) {
                                 var suggest = resultJson[i];
                                 childs += "<div style='border-bottom: 1px solid pink' οnclick='Write(this)' οnmοuseοut='recoverColorwhenMouseout(this)' οnmοuseοver='changeColorwhenMouseover(this)'>"
-                                    + suggest.name + (suggest.type === 1 ? "（企业）" : "（职位）")
+                                    + suggest.highlight + (suggest.type === 1 ? "（企业）" : "（职位）")
                                     + "</div>";
                             }
                             //把childs 这div集合放入到下拉提示框的父div中，上面我们以获取了
@@ -121,7 +124,7 @@
                 }
 
                 //创建与服务器的连接
-                xhr.open("GET", "ourea_home/suggest?key=" + text);
+                xhr.open("GET", "ourea_home_v2/suggest?key=" + text);
 
 
                 //发送
