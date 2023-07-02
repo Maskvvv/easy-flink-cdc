@@ -8,11 +8,8 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.common.text.Text;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.functionscore.FieldValueFactorFunctionBuilder;
-import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
@@ -45,10 +42,10 @@ public class OureaHomeSuggestiongV2Controller {
 
         List<OureaHomeSuggestionModel> result = new ArrayList<>();
 
-        String[] highlightField = {"name.ik_pinyin", "name.completion", "name.chinese"};
+        String[] highlightFieldName = {"name.prefix", "name.standard", "name.full_pinyin", "name.first_letter.prefix", "name.first_letter"};
 
         query(key, searchRequest);
-        highlight(searchRequest, highlightField);
+        highlight(searchRequest, highlightFieldName);
 
         SearchResponse search = companyDocumentMapper.search(searchRequest, RequestOptions.DEFAULT);
         SearchHit[] hits = search.getHits().getHits();
@@ -60,14 +57,14 @@ public class OureaHomeSuggestiongV2Controller {
 
             Map<String, HighlightField> highlightFields = hit.getHighlightFields();
 
-            for (String field : highlightField) {
-                HighlightField highlightField1 = highlightFields.get(field);
-                if (highlightField1 == null) continue;
-                Text[] fragments = highlightField1.getFragments();
+            for (String hfName : highlightFieldName) {
+                HighlightField hf = highlightFields.get(hfName);
+                if (hf == null) continue;
+
+                Text[] fragments = hf.getFragments();
                 homeSuggestionModel.setHighlight(fragments[0].toString());
                 break;
             }
-
         }
         return result;
     }
@@ -75,39 +72,69 @@ public class OureaHomeSuggestiongV2Controller {
     private void highlight(SearchRequest searchRequest, String[] highlightField) {
         HighlightBuilder highlightBuilder = new HighlightBuilder();
         for (String field : highlightField) {
-            highlightBuilder.field(field);
+            highlightBuilder.field(field).highlighterType("plain");
         }
 
         searchRequest.source().highlighter(highlightBuilder);
     }
 
     private void query(String key, SearchRequest searchRequest) {
-        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().minimumShouldMatch(1);
+        boolQueryBuilder.filter(QueryBuilders.termQuery("onlined", 1));
         List<QueryBuilder> should = boolQueryBuilder.should();
+
+        // 中文前缀
         should.add(QueryBuilders
-                .matchQuery("name.completion", key)
-                .analyzer("keyword_pinyin_analyzer")
-                .fuzziness(0).boost(2));
+                .termQuery("name.prefix", key)
+                .boost(10));
 
-
+        // 中文中缀
         should.add(QueryBuilders
-                .matchQuery("name.ik_pinyin", key).analyzer("keyword_pinyin_analyzer"));
+                .matchPhraseQuery("name.standard", key)
+                .boost(5f));
 
+
+        // 拼音全拼前缀
+        BoolQueryBuilder fullPinyinPrefixBoolQueryBuilder = new BoolQueryBuilder();
+        should.add(fullPinyinPrefixBoolQueryBuilder);
+        fullPinyinPrefixBoolQueryBuilder.minimumShouldMatch(1);
+        fullPinyinPrefixBoolQueryBuilder.boost(3);
+
+        fullPinyinPrefixBoolQueryBuilder.filter(
+                QueryBuilders.matchPhrasePrefixQuery("name.full_pinyin.prefix", key)
+                        .analyzer("full_pinyin_prefix_search_analyzer")
+                        .maxExpansions(100));
+
+        fullPinyinPrefixBoolQueryBuilder.should().add(
+                QueryBuilders.matchPhrasePrefixQuery("name.full_pinyin", key)
+                        .analyzer("full_pinyin_search_analyzer"));
+
+        // 拼音全拼中缀
         should.add(QueryBuilders
-                .termQuery("name.keyword", key).boost(10));
+                .matchPhrasePrefixQuery("name.full_pinyin", key)
+                .analyzer("full_pinyin_search_analyzer")
+                .boost(1.5f));
+
+        // 拼音首字母前缀
+        should.add(QueryBuilders
+                .matchQuery("name.first_letter.prefix", key)
+                .analyzer("first_letter_prefix_search_analyzer")
+                .maxExpansions(100)
+                .boost(1));
+
+        // 拼音首字母中缀
+        should.add(QueryBuilders
+                .matchPhraseQuery("name.first_letter", key)
+                .analyzer("first_letter_search_analyzer")
+                .boost(0.8f));
+
+        //FieldValueFactorFunctionBuilder fieldValueFactorFunctionBuilder = new FieldValueFactorFunctionBuilder("sequence");
+        //fieldValueFactorFunctionBuilder.missing(0);
+        //fieldValueFactorFunctionBuilder.factor(1);
+        //FunctionScoreQueryBuilder functionScoreQueryBuilder = new FunctionScoreQueryBuilder(boolQueryBuilder, fieldValueFactorFunctionBuilder);
 
 
-        if (isContainChinese(key)) {
-            boolQueryBuilder.must(QueryBuilders.matchQuery("name.chinese", key).operator(Operator.AND));
-        }
-
-        FieldValueFactorFunctionBuilder fieldValueFactorFunctionBuilder = new FieldValueFactorFunctionBuilder("sequence");
-        fieldValueFactorFunctionBuilder.missing(0);
-        fieldValueFactorFunctionBuilder.factor(1);
-
-
-        FunctionScoreQueryBuilder functionScoreQueryBuilder = new FunctionScoreQueryBuilder(boolQueryBuilder, fieldValueFactorFunctionBuilder);
-        searchRequest.source().query(functionScoreQueryBuilder);
+        searchRequest.source().query(boolQueryBuilder);
     }
 
     public static boolean isContainChinese(String str) {

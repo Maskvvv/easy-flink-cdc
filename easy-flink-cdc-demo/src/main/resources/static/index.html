@@ -124,7 +124,7 @@
                 }
 
                 //创建与服务器的连接
-                xhr.open("GET", "ourea_home_v2/suggest?key=" + text);
+                xhr.open("GET", "ourea_home_v2/suggest?key=" +  encodeURI(text).replace(/\+/g,'%2B'));
 
 
                 //发送
