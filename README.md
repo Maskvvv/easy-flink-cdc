@@ -2,7 +2,7 @@
 
 # 概念说明
 
-![](http://qiniu.zhouhongyin.top/2023/07/03/1688364357-image-20230703140556911.png)
+![](http://qiniu.zhouhongyin.top/2023/07/04/1688435824-image-20230704095704594.png)
 
 ## **application**
 
