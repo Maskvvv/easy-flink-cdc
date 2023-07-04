@@ -20,18 +20,18 @@
 
 每个 **Flink Job** 都有一个自己的 **cursor**，他记录着每个 **Flink Job** 当前同步 binlog 的位置，用来在 CDC 项目重新启动是接着上一次同步的位置，继续同步数据。
 
-```json
+```text
 # cursor 数据结构
 - application2
-- 端口号
-- meta.dat
-- flink job cursor
-- flink job cursor
+ - 端口号
+  - meta.dat
+   - flink job cursor
+   - flink job cursor
 - application2
-- 端口号
-- meta.dat
-- flink job cursor
-- flink job cursor
+ - 端口号
+  - meta.dat
+   - flink job cursor
+   - flink job cursor
 ```
 
 # 使用
