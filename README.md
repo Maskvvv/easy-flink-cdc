@@ -43,7 +43,7 @@
 ```xml
 
 <dependency>
-  <groupId>com.easy-flink-cdc</groupId>
+  <groupId>io.github.maskvvv</groupId>
   <artifactId>easy-flink-cdc-boot-starter</artifactId>
   <version>1.0.0</version>
 </dependency>
