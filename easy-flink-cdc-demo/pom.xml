@@ -3,8 +3,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>easy-flink-cdc</artifactId>
-        <groupId>com.easy-flink-cdc</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <groupId>io.github.maskvvv</groupId>
+        <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -13,6 +13,7 @@
     <name>easy-flink-cdc-demo</name>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -38,7 +39,7 @@
             <version>1.18.12</version>
         </dependency>
         <dependency>
-            <groupId>com.easy-flink-cdc</groupId>
+            <groupId>io.github.maskvvv</groupId>
             <artifactId>easy-flink-cdc-boot-starter</artifactId>
             <version>1.0-SNAPSHOT</version>
             <exclusions>
