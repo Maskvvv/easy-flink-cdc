@@ -46,7 +46,7 @@ import java.util.Map;
  * @since 2023/5/23 15:33
  */
 @Configuration
-@ConditionalOnProperty(name = BaseEsConstants.ENABLE_PREFIX, havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = BaseEsConstants.ENABLE_PREFIX, havingValue = "true", matchIfMissing = false)
 public class FlinkJobConfiguration implements ApplicationContextAware, SmartInitializingSingleton, EnvironmentAware, Ordered {
     Logger logger = LoggerFactory.getLogger(FlinkJobConfiguration.class.getName());
 

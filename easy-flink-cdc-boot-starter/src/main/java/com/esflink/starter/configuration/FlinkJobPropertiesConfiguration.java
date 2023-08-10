@@ -31,7 +31,7 @@ import java.util.List;
  */
 @Configuration
 @EnableConfigurationProperties(EasyFlinkProperties.class)
-@ConditionalOnProperty(name = BaseEsConstants.ENABLE_PREFIX, havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = BaseEsConstants.ENABLE_PREFIX, havingValue = "true", matchIfMissing = false)
 public class FlinkJobPropertiesConfiguration implements ApplicationContextAware, BeanFactoryPostProcessor, Ordered {
 
     @Autowired

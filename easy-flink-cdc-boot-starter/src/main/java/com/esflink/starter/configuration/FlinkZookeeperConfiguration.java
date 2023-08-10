@@ -17,7 +17,7 @@ import org.springframework.core.Ordered;
  */
 @EnableConfigurationProperties(EasyFlinkProperties.class)
 @Configuration
-@ConditionalOnProperty(name = BaseEsConstants.ENABLE_PREFIX, havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = BaseEsConstants.ENABLE_PREFIX, havingValue = "true", matchIfMissing = false)
 public class FlinkZookeeperConfiguration implements Ordered {
 
     @Autowired

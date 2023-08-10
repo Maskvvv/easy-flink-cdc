@@ -23,7 +23,7 @@ import java.io.Serializable;
  */
 @EnableConfigurationProperties(EasyFlinkProperties.class)
 @ConfigurationProperties(value = BaseEsConstants.PREFIX)
-@ConditionalOnProperty(name = BaseEsConstants.ENABLE_PREFIX, havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = BaseEsConstants.ENABLE_PREFIX, havingValue = "true", matchIfMissing = false)
 public class EasyFlinkProperties implements Serializable {
 
     private String enable;
