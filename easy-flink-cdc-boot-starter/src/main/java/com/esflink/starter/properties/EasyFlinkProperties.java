@@ -2,6 +2,7 @@ package com.esflink.starter.properties;
 
 
 import com.esflink.starter.common.utils.LogUtils;
+import com.esflink.starter.configuration.MetaManagerConfiguration;
 import com.esflink.starter.constants.BaseEsConstants;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.StringUtils;
@@ -30,7 +31,18 @@ public class EasyFlinkProperties implements Serializable {
 
     private Nacos cloudConfig;
 
-    private MetaModel metaModel = MetaModel.FILE;
+    /**
+     * <p> Cursor 的记录方式 </p>
+     *
+     * <ul>
+     *  <li>file</li>
+     *  <li>memory</li>
+     *  <li>zookeeper</li>
+     * <ul/>
+     *
+     * @see MetaManagerConfiguration
+     */
+    private String metaModel;
 
     private Meta meta;
 
@@ -130,10 +142,6 @@ public class EasyFlinkProperties implements Serializable {
         }
     }
 
-    public static enum MetaModel {
-        FILE, ZOOKEEPER
-    }
-
     public static class Meta {
 
         private String applicationName;
@@ -191,14 +199,6 @@ public class EasyFlinkProperties implements Serializable {
         this.cloudConfig = cloudConfig;
     }
 
-    public MetaModel getMetaModel() {
-        return metaModel;
-    }
-
-    public void setMetaModel(MetaModel metaModel) {
-        this.metaModel = metaModel;
-    }
-
     public Meta getMeta() {
         return meta;
     }
@@ -213,5 +213,13 @@ public class EasyFlinkProperties implements Serializable {
 
     public void setEnvironment(Environment environment) {
         this.environment = environment;
+    }
+
+    public String getMetaModel() {
+        return metaModel;
+    }
+
+    public void setMetaModel(String metaModel) {
+        this.metaModel = metaModel;
     }
 }

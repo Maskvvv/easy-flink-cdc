@@ -1,9 +1,12 @@
 package com.esflink.starter.configuration;
 
 import com.esflink.starter.constants.BaseEsConstants;
-import com.esflink.starter.meta.FileMixedMetaManager;
+import com.esflink.starter.holder.FlinkJobBus;
+import com.esflink.starter.meta.MemoryMetaManager;
+import com.esflink.starter.meta.MetaManager;
 import com.esflink.starter.properties.EasyFlinkOrdered;
 import com.esflink.starter.properties.EasyFlinkProperties;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -15,6 +18,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
 
 import java.io.File;
+import java.util.ServiceLoader;
 
 /**
  * meta 信息管理器 配置类
@@ -36,11 +40,21 @@ public class MetaManagerConfiguration implements Ordered, EnvironmentAware {
 
     @Primary
     @Bean(initMethod = "start", destroyMethod = "stop")
-    public FileMixedMetaManager fileMixedMetaManager() {
-        FileMixedMetaManager fileMixedMetaManager = new FileMixedMetaManager();
-        EasyFlinkProperties.Meta meta = easyFlinkProperties.getMeta();
-        fileMixedMetaManager.setDataDir(meta.getDataDir());
-        return fileMixedMetaManager;
+    public MetaManager metaManager() {
+        String metaModel = StringUtils.defaultIfBlank(easyFlinkProperties.getMetaModel(), MemoryMetaManager.NAME);
+
+        ServiceLoader<MetaManager> metaManagers = ServiceLoader.load(MetaManager.class);
+
+        MetaManager bean = new MemoryMetaManager();
+        for (MetaManager metaManager : metaManagers) {
+            String name = metaManager.getName();
+            if (metaModel.equals(name)) {
+                bean = metaManager;
+                break;
+            }
+        }
+        FlinkJobBus.setMetaManager(bean);
+        return bean;
     }
 
     @Override

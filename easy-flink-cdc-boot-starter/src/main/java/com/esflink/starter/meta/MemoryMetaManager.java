@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MemoryMetaManager extends AbstractMetaLifeCycle implements MetaManager {
     protected Map<FlinkJobIdentity, LogPosition> cursors;
     protected Map<String, FlinkJobIdentity> flinkJobs;
+    public static final String NAME = "memory";
 
     public void start() {
         super.start();
@@ -38,5 +39,10 @@ public class MemoryMetaManager extends AbstractMetaLifeCycle implements MetaMana
     @Override
     public void updateCursor(FlinkJobIdentity flinkJobIdentity, LogPosition position) {
         cursors.put(flinkJobIdentity, position);
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 }

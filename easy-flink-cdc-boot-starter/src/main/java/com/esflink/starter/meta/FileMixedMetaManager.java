@@ -50,9 +50,8 @@ import java.util.logging.Logger;
 public class FileMixedMetaManager extends MemoryMetaManager implements MetaManager, Serializable {
 
     private static final Logger logger = Logger.getLogger(FileMixedMetaManager.class.getName());
-
-
     private static final Charset charset = StandardCharsets.UTF_8;
+    private final String NAME = "file";
 
     @Autowired
     private EasyFlinkProperties easyFlinkProperties;
@@ -81,6 +80,9 @@ public class FileMixedMetaManager extends MemoryMetaManager implements MetaManag
 
     public void start() {
         super.start();
+        EasyFlinkProperties.Meta meta = easyFlinkProperties.getMeta();
+        setDataDir(meta.getDataDir());
+
         if (!dataDir.exists()) {
             try {
                 FileUtils.forceMkdir(dataDir);
@@ -214,4 +216,8 @@ public class FileMixedMetaManager extends MemoryMetaManager implements MetaManag
         this.period = period;
     }
 
+    @Override
+    public String getName() {
+        return NAME;
+    }
 }

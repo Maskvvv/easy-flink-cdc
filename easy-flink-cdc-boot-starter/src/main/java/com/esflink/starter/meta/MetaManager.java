@@ -21,4 +21,9 @@ public interface MetaManager extends MetaLifeCycle, Serializable {
      */
     void updateCursor(FlinkJobIdentity flinkJobIdentity, LogPosition position);
 
+    /**
+     * 获取该 meta 管理名称（唯一标识）
+     */
+    String getName();
+
 }
