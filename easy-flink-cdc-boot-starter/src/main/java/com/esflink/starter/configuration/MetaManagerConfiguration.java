@@ -21,7 +21,7 @@ import java.io.File;
 import java.util.ServiceLoader;
 
 /**
- * meta 信息管理器 配置类
+ * <p> meta 信息管理器 配置类 </p>
  *
  * @author zhouhongyin
  * @since 2023/5/23 15:33

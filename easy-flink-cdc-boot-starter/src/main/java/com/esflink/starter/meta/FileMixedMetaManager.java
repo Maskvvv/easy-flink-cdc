@@ -35,12 +35,27 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 /**
- * 基于文件刷新的metaManager实现
+ * 基于文件刷新的 metaManager 实现
  *
+ * <h2>写入策略</h2>
  * <pre>
- * 策略：
  * 1. 先写内存，然后定时刷新数据到File
  * 2. 数据采取overwrite模式(只保留最后一次)
+ * </pre>
+ *
+ * <h2>存储结构</h2>
+ * <pre>
+ * user.home
+ *   easy-flink-cdc
+ *     applicationName port
+ *       flinkJobName1
+ *         meta.dat
+ *           sink1
+ *           sink2
+ *       flinkJobName2
+ *         meta.dat
+ *           sink1
+ *           sink2
  * </pre>
  *
  * @author zhouhongyin
@@ -80,6 +95,7 @@ public class FileMixedMetaManager extends MemoryMetaManager implements MetaManag
 
     public void start() {
         super.start();
+        // 设置 meta.dat 存放位置
         EasyFlinkProperties.Meta meta = easyFlinkProperties.getMeta();
         setDataDir(meta.getDataDir());
 
@@ -95,11 +111,9 @@ public class FileMixedMetaManager extends MemoryMetaManager implements MetaManag
             throw new MetaManagerException("dir[" + dataDir.getPath() + "] can not read/write");
         }
 
-        dataFileCaches = new ConcurrentHashMap<>();
         initDataFileCaches();
 
         updateCursorTasks = new CopyOnWriteArraySet<>();
-
         loadCursor();
 
         executor = Executors.newScheduledThreadPool(1, new CustomizableThreadFactory("easy-flink-cdc-meta-file-"));
@@ -129,7 +143,11 @@ public class FileMixedMetaManager extends MemoryMetaManager implements MetaManag
         updateCursorTasks.add(flinkJobIdentity);
     }
 
+    /**
+     * <p>启动时为每个 FlinkJob 创建 meta.dat 的存放路径</p>
+     */
     private void initDataFileCaches() {
+        dataFileCaches = new ConcurrentHashMap<>();
         List<FlinkJobProperties> properties = FlinkJobPropertiesHolder.getProperties();
         if (CollectionUtils.isEmpty(properties)) return;
 
@@ -154,6 +172,11 @@ public class FileMixedMetaManager extends MemoryMetaManager implements MetaManag
         }
     }
 
+    /**
+     * <p>将内存中的 FlinkJob cursor 持久化</p>
+     *
+     * @param flinkJobIdentity FlinkJob 唯一标识
+     */
     private void flushDataToFile(FlinkJobIdentity flinkJobIdentity) {
         flushDataToFile(flinkJobIdentity, dataFileCaches.get(flinkJobIdentity));
     }
@@ -170,7 +193,11 @@ public class FileMixedMetaManager extends MemoryMetaManager implements MetaManag
 
     }
 
-
+    /**
+     * <p>启动时加载 {@code dataDir} 路径下的 cursor 到内存，
+     * 使得 FlinkJob 可以接着上次 cursor 继续监听 binlog
+     * </p>
+     */
     private void loadCursor() {
         PathMatchingResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver(new FileSystemResourceLoader());
         try {
