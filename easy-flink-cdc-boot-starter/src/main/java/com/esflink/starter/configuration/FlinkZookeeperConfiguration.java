@@ -1,9 +1,11 @@
 package com.esflink.starter.configuration;
 
 import com.esflink.starter.constants.BaseEsConstants;
+import com.esflink.starter.meta.ZookeeperMixedMetaManager;
 import com.esflink.starter.properties.EasyFlinkOrdered;
 import com.esflink.starter.properties.EasyFlinkProperties;
 import com.esflink.starter.zookeeper.ZkClientx;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -19,16 +21,17 @@ import org.springframework.core.Ordered;
  */
 @EnableConfigurationProperties(EasyFlinkProperties.class)
 @Configuration
-@ConditionalOnProperty(name = BaseEsConstants.ENABLE_PREFIX, havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(name = BaseEsConstants.ENABLE_PREFIX, havingValue = "true")
 public class FlinkZookeeperConfiguration implements Ordered {
-
+    public static final String ZOOKEEPER_ADDRESS = "127.0.0.1:21810";
     @Autowired
     private EasyFlinkProperties easyFlinkProperties;
 
     @Bean
-    @ConditionalOnProperty(name = BaseEsConstants.META_MODEL, havingValue = "zookeeper")
+    @ConditionalOnProperty(name = BaseEsConstants.META_MODEL, havingValue = ZookeeperMixedMetaManager.NAME)
     public ZkClientx zkClientx() {
-        ZkClientx zkClient = new ZkClientx(easyFlinkProperties.getZkClientx().getZkServers());
+        String address = StringUtils.defaultString(easyFlinkProperties.getZookeeper().getAddress(), ZOOKEEPER_ADDRESS);
+        ZkClientx zkClient = new ZkClientx(address);
         return zkClient;
     }
 

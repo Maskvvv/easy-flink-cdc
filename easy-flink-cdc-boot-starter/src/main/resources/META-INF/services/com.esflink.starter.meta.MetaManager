@@ -1,2 +1,3 @@
 com.esflink.starter.meta.MemoryMetaManager
 com.esflink.starter.meta.FileMixedMetaManager
+com.esflink.starter.meta.ZookeeperMixedMetaManager

@@ -3,7 +3,6 @@ package com.esflink.demo.sink.oureahome;
 import com.alibaba.fastjson.JSON;
 import com.esflink.demo.document.OureaHomeSuggestionDoc;
 import com.esflink.demo.mapper.es.OureaHomeSuggestionDocMapper;
-import com.esflink.starter.annotation.FlinkSink;
 import com.esflink.starter.common.data.DataChangeInfo;
 import com.esflink.starter.common.data.FlinkJobSink;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author zhouhongyin
  * @since 2023/6/9 17:11
  */
-@FlinkSink(value = "ourea", database = "ourea", table = "ourea.occupation")
+//@FlinkSink(value = "ourea", database = "ourea", table = "ourea.occupation")
 public class OccupationSink implements FlinkJobSink {
 
     @Autowired(required = false)

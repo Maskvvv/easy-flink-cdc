@@ -41,7 +41,7 @@
         <dependency>
             <groupId>io.github.maskvvv</groupId>
             <artifactId>easy-flink-cdc-boot-starter</artifactId>
-            <version>${version}</version>
+            <version>${parent.version}</version>
             <exclusions>
                 <exclusion>
                     <artifactId>spring-boot-starter-logging</artifactId>

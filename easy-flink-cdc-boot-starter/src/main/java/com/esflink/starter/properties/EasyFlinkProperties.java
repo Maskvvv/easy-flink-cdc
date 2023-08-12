@@ -46,7 +46,7 @@ public class EasyFlinkProperties implements Serializable {
 
     private Meta meta;
 
-    private ZkClientx zkClientx;
+    private Zookeeper zookeeper;
 
     @Autowired
     @JsonIgnore
@@ -130,15 +130,15 @@ public class EasyFlinkProperties implements Serializable {
         }
     }
 
-    public static class ZkClientx {
-        private String zkServers;
+    public static class Zookeeper {
+        private String address;
 
-        public String getZkServers() {
-            return zkServers;
+        public String getAddress() {
+            return address;
         }
 
-        public void setZkServers(String zkServers) {
-            this.zkServers = zkServers;
+        public void setAddress(String address) {
+            this.address = address;
         }
     }
 
@@ -175,12 +175,12 @@ public class EasyFlinkProperties implements Serializable {
         }
     }
 
-    public ZkClientx getZkClientx() {
-        return zkClientx;
+    public Zookeeper getZookeeper() {
+        return zookeeper;
     }
 
-    public void setZkClientx(ZkClientx zkClientx) {
-        this.zkClientx = zkClientx;
+    public void setZookeeper(Zookeeper zookeeper) {
+        this.zookeeper = zookeeper;
     }
 
     public String getEnable() {

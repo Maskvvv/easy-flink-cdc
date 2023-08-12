@@ -13,7 +13,7 @@ public class BaseEsConstants {
 
     public static final String META_DATA_DIR = PREFIX + ".meta.dataDir";
 
-    public static final String META_MODEL = PREFIX + ".metaModel";
+    public static final String META_MODEL = PREFIX + ".meta-model";
 
 
 }

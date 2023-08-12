@@ -59,7 +59,7 @@ public class ZookeeperMixedMetaManager extends MemoryMetaManager implements Meta
 
     private static final Logger logger = Logger.getLogger(ZookeeperMixedMetaManager.class.getName());
     private static final Charset charset = StandardCharsets.UTF_8;
-    private final String NAME = "zookeeper";
+    public static final String NAME = "zookeeper";
 
     @Autowired
     private EasyFlinkProperties easyFlinkProperties;

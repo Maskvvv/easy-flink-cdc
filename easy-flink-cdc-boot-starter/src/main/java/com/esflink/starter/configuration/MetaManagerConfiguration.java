@@ -59,7 +59,7 @@ public class MetaManagerConfiguration implements Ordered, EnvironmentAware {
 
     @Override
     public int getOrder() {
-        return EasyFlinkOrdered.ORDER_ZOOKEEPER;
+        return EasyFlinkOrdered.ORDER_META_MANAGER;
     }
 
     @Override
