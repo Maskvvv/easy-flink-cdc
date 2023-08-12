@@ -2,7 +2,7 @@
 
 # 概念说明
 
-![](http://qiniu.zhouhongyin.top/2023/07/04/1688436145-image-20230704100225243.png)
+![](http://qiniu.zhouhongyin.top/2023/08/12/1691810600-image-20230812112319984.png)
 
 ## **application**
 
@@ -34,6 +34,21 @@
    - flink job cursor
 ```
 
+## meta
+
+cursor 持久化的方式，目前有三种：
+
+- memory：仅持久化到内存中
+- file：持久化到文件中
+- zookeeper：持久化到 zookeeper 中
+
+你也可以通过以下步骤自己实现持久化的方式：
+
+1. 实现 `com.esflink.starter.meta.MetaManager`
+2. 通过 **Java spi** 的方式加入你的实现类
+
+![](http://qiniu.zhouhongyin.top/2023/08/12/1691810881-image-20230812112801216.png)
+
 # 使用
 
 通过下面这 4 步你就可以轻松实现对 MySQL 的 CDC。
@@ -45,7 +60,7 @@
 <dependency>
   <groupId>io.github.maskvvv</groupId>
   <artifactId>easy-flink-cdc-boot-starter</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
 </dependency>
 ```
 
@@ -96,6 +111,10 @@ athena = {
 ```properties
 easy-flink.enable=true
 easy-flink.meta-model=file
+
+# zookeeper 模式
+# easy-flink.zookeeper.address=127.0.0.1:21810
+# easy-flink.meta-model=zookeeper
 ```
 
 启动类
@@ -170,7 +189,6 @@ public class DemoSink implements FlinkJobSink {
 - 框架不够模块化
 - 框架类分包混乱（主要我不知道咋分）
 - 框架可拓展性不高，比如自定义拓展序列化方式、自定义配置文件加载方式等
-- **cursor** 的记录不支持现在现在主流分布式的特性，现在是通过先写内存，再定时刷盘的方式记录 cursor 的，后续规划支持通过 zookeeper 记录 cursor
 - 配置文件的加载不支持分布式特性，现在只能加载本地配置文件，后续规划支持通过 nacos-config
 - 项目启动时会如果有指定 cursor，会短暂阻塞数据库，所以建议指定从库进行监听
 - 自已对 Flink CDC 的了解还不够深刻，可能有些情况还没考虑到
