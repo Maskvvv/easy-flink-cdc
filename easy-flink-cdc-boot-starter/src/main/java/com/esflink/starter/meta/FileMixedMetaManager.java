@@ -3,12 +3,13 @@ package com.esflink.starter.meta;
 
 import com.alibaba.fastjson.JSON;
 import com.esflink.starter.common.exception.MetaManagerException;
-import com.esflink.starter.common.utils.LogUtils;
 import com.esflink.starter.common.utils.ResourceUtils;
 import com.esflink.starter.holder.FlinkJobPropertiesHolder;
 import com.esflink.starter.properties.EasyFlinkProperties;
 import com.esflink.starter.properties.FlinkJobProperties;
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.Resource;
@@ -32,7 +33,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 /**
  * 基于文件刷新的 metaManager 实现
@@ -64,7 +64,7 @@ import java.util.logging.Logger;
 @Component
 public class FileMixedMetaManager extends MemoryMetaManager implements MetaManager, Serializable {
 
-    private static final Logger logger = Logger.getLogger(FileMixedMetaManager.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(FileMixedMetaManager.class);
     private static final Charset charset = StandardCharsets.UTF_8;
     private final String NAME = "file";
 
@@ -127,8 +127,7 @@ public class FileMixedMetaManager extends MemoryMetaManager implements MetaManag
                             // 定时将内存中的最新值刷到file中，多次变更只刷一次
                             flushDataToFile(flinkJobIdentity);
                         } catch (Throwable e) {
-                            // ignore
-                            LogUtils.error("period update [" + flinkJobIdentity.toString() + "] curosr failed!", e.getMessage());
+                            logger.error("period update [{}] curosr failed!", flinkJobIdentity, e);
                         }
                     }
                 },

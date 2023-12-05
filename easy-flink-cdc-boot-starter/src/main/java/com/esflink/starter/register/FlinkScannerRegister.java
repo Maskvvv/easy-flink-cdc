@@ -1,7 +1,9 @@
 package com.esflink.starter.register;
 
 import com.esflink.starter.annotation.EasyFlinkScan;
-import com.esflink.starter.common.utils.LogUtils;
+import com.esflink.starter.properties.EasyFlinkProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
@@ -25,7 +27,7 @@ import static com.esflink.starter.constants.BaseEsConstants.ENABLE_PREFIX;
  * @since 2023/5/23 11:12
  */
 public class FlinkScannerRegister implements ImportBeanDefinitionRegistrar, EnvironmentAware {
-
+    private static final Logger logger = LoggerFactory.getLogger(EasyFlinkProperties.class);
 
     private Environment environment;
 
@@ -33,7 +35,7 @@ public class FlinkScannerRegister implements ImportBeanDefinitionRegistrar, Envi
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
         Boolean enable = Optional.ofNullable(environment.getProperty(ENABLE_PREFIX)).map(Boolean::parseBoolean).orElse(Boolean.TRUE);
         if (!enable) {
-            LogUtils.info("===> Easy-Flink is not enabled");
+            logger.info("===> Easy-Flink is not enabled");
             return;
         }
 

@@ -2,13 +2,14 @@ package com.esflink.starter.meta;
 
 
 import com.alibaba.fastjson.JSON;
-import com.esflink.starter.common.utils.LogUtils;
 import com.esflink.starter.holder.FlinkJobPropertiesHolder;
 import com.esflink.starter.properties.EasyFlinkProperties;
 import com.esflink.starter.properties.FlinkJobProperties;
 import com.esflink.starter.zookeeper.FlinkJobZKPathUtils;
 import com.esflink.starter.zookeeper.ZkClientx;
 import org.I0Itec.zkclient.exception.ZkNoNodeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import org.springframework.stereotype.Component;
@@ -26,7 +27,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 /**
  * 基于 zookeeper 刷新的 metaManager 实现
@@ -57,7 +57,7 @@ import java.util.logging.Logger;
 @Component
 public class ZookeeperMixedMetaManager extends MemoryMetaManager implements MetaManager, Serializable {
 
-    private static final Logger logger = Logger.getLogger(ZookeeperMixedMetaManager.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(ZookeeperMixedMetaManager.class);
     private static final Charset charset = StandardCharsets.UTF_8;
     public static final String NAME = "zookeeper";
 
@@ -100,8 +100,7 @@ public class ZookeeperMixedMetaManager extends MemoryMetaManager implements Meta
                             // 定时将内存中的最新值刷到file中，多次变更只刷一次
                             flushDataToZookeeper(flinkJobIdentity);
                         } catch (Throwable e) {
-                            // ignore
-                            LogUtils.error("period update [" + flinkJobIdentity.toString() + "] curosr failed!", e.getMessage());
+                            logger.error("period update [{}] curosr failed!", flinkJobIdentity, e);
                         }
                     }
                 },

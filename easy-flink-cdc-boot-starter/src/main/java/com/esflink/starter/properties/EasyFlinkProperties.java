@@ -1,11 +1,12 @@
 package com.esflink.starter.properties;
 
 
-import com.esflink.starter.common.utils.LogUtils;
 import com.esflink.starter.configuration.MetaManagerConfiguration;
 import com.esflink.starter.constants.BaseEsConstants;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -26,6 +27,7 @@ import java.io.Serializable;
 @ConfigurationProperties(value = BaseEsConstants.PREFIX)
 @ConditionalOnProperty(name = BaseEsConstants.ENABLE_PREFIX, havingValue = "true", matchIfMissing = false)
 public class EasyFlinkProperties implements Serializable {
+    private static final Logger logger = LoggerFactory.getLogger(EasyFlinkProperties.class);
 
     private String enable;
 
@@ -81,7 +83,7 @@ public class EasyFlinkProperties implements Serializable {
             meta.setDataDir(meta.getDataDir().substring(0, meta.getDataDir().length() - 1));
         }
 
-        LogUtils.formatInfo("meta dataDir is: [%s]", meta.getDataDir());
+        logger.info("meta dataDir is: {}", meta.getDataDir());
     }
 
 
