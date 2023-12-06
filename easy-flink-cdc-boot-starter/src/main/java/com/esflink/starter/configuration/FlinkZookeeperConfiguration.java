@@ -37,6 +37,6 @@ public class FlinkZookeeperConfiguration implements Ordered {
 
     @Override
     public int getOrder() {
-        return EasyFlinkOrdered.ORDER_ZOOKEEPER;
+        return EasyFlinkOrdered.ZOOKEEPER;
     }
 }

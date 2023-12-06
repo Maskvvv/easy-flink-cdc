@@ -63,8 +63,8 @@ public class FlinkJobBus {
             }
 
         } catch (Exception e) {
-            logger.error("sink: [{}], dataChangeInfo: {}, error: {}", sink.getClass().getName(), dataChangeInfo, e);
-            e.printStackTrace();
+            logger.error("sink [{}] post is error, dataChangeInfo: {}, error: {}", sink.getClass().getName(), dataChangeInfo, e.getMessage());
+            logger.error("sink post error", e);
             sink.handleError(dataChangeInfo, context, e);
         }
     }

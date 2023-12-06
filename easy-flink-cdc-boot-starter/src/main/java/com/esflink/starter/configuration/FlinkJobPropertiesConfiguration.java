@@ -58,6 +58,6 @@ public class FlinkJobPropertiesConfiguration implements ApplicationContextAware,
 
     @Override
     public int getOrder() {
-        return EasyFlinkOrdered.ORDER_LISTENER_PROPERTIES;
+        return EasyFlinkOrdered.PROPERTIES_CONFIG;
     }
 }

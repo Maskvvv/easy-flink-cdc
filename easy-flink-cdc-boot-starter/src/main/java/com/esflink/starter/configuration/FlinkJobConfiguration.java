@@ -52,8 +52,6 @@ public class FlinkJobConfiguration implements ApplicationContextAware, SmartInit
     @Autowired
     private EasyFlinkProperties easyFlinkProperties;
 
-
-
     @Override
     public void afterSingletonsInstantiated() {
 
@@ -151,7 +149,7 @@ public class FlinkJobConfiguration implements ApplicationContextAware, SmartInit
 
     @Override
     public int getOrder() {
-        return EasyFlinkOrdered.ORDER_LISTENER;
+        return EasyFlinkOrdered.FLINK_JOB;
     }
 
 
