@@ -23,16 +23,13 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
-import org.springframework.core.env.Environment;
 import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Proxy;
@@ -47,23 +44,14 @@ import java.util.Map;
  */
 @Configuration
 @ConditionalOnProperty(name = BaseEsConstants.ENABLE_PREFIX, havingValue = "true", matchIfMissing = false)
-public class FlinkJobConfiguration implements ApplicationContextAware, SmartInitializingSingleton, EnvironmentAware, Ordered {
+public class FlinkJobConfiguration implements ApplicationContextAware, SmartInitializingSingleton, Ordered {
     Logger logger = LoggerFactory.getLogger(FlinkJobConfiguration.class.getName());
 
     private ApplicationContext applicationContext;
 
-    private Environment environment;
-
     @Autowired
     private EasyFlinkProperties easyFlinkProperties;
 
-    //@Autowired
-    //private ZkClientx zkClientx;
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
 
 
     @Override
@@ -78,8 +66,7 @@ public class FlinkJobConfiguration implements ApplicationContextAware, SmartInit
             try {
                 initFlinkJob(flinkProperty);
             } catch (Exception e) {
-                e.printStackTrace();
-                throw new BeanCreationException("init Flink job failed!");
+                logger.error("init Flink job [" + flinkProperty.getName() + "] failed!", e);
             }
         }
 
@@ -97,7 +84,7 @@ public class FlinkJobConfiguration implements ApplicationContextAware, SmartInit
                     FlinkSink flinkSink = value.getClass().getAnnotation(FlinkSink.class);
                     FlinkSinkHolder.registerSink((FlinkJobSink) value, flinkSink);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error("init Flink sink [" + key + "] failed!", e);
                 }
 
             }
@@ -106,7 +93,10 @@ public class FlinkJobConfiguration implements ApplicationContextAware, SmartInit
 
     private void initFlinkJob(FlinkJobProperties flinkProperty) throws Exception {
         List<FlinkJobSink> dataChangeSinks = FlinkSinkHolder.getSink(flinkProperty.getName());
-        if (CollectionUtils.isEmpty(dataChangeSinks)) return;
+        if (CollectionUtils.isEmpty(dataChangeSinks)) {
+            logger.warn("There are no sink under the Flink Job [{}]!", flinkProperty.getName());
+            return;
+        }
         FlinkJobIdentity flinkJobIdentity = FlinkJobIdentity.generate(easyFlinkProperties.getMeta(), flinkProperty.getName());
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -125,7 +115,7 @@ public class FlinkJobConfiguration implements ApplicationContextAware, SmartInit
 
         env.executeAsync();
 
-        logger.info("Flink Job [{}] 启动成功！", flinkProperty.getName());
+        logger.info("Flink Job [{}] success", flinkProperty.getName());
     }
 
     /**
@@ -166,7 +156,7 @@ public class FlinkJobConfiguration implements ApplicationContextAware, SmartInit
 
 
     @Override
-    public void setEnvironment(Environment environment) {
-        this.environment = environment;
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 }

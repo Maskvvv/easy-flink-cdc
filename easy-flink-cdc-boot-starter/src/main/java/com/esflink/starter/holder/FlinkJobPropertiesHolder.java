@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * flinkJobPropertiesHolder 工厂
+ * flinkJobPropertiesHolder
  *
  * @author zhouhongyin
  * @since 2023/5/23 14:19
