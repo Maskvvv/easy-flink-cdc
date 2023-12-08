@@ -159,9 +159,14 @@ public class FlinkJobProperties {
 
     public StartupOptions getStartupOptions() {
         String startupMode = this.startupMode;
-        if ("INITIAL".equals(startupMode)) return StartupOptions.initial();
-        if ("LATEST".equals(startupMode)) return StartupOptions.latest();
-        if ("TIMESTAMP".equals(startupMode)) return StartupOptions.timestamp(startupTimestampMillis);
-        return StartupOptions.latest();
+
+        switch (startupMode) {
+            case "INITIAL":
+                return StartupOptions.initial();
+            case "TIMESTAMP":
+                return StartupOptions.timestamp(startupTimestampMillis);
+            default:
+                return StartupOptions.latest();
+        }
     }
 }

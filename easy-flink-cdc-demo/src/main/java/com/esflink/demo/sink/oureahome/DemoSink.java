@@ -3,7 +3,6 @@ package com.esflink.demo.sink.oureahome;
 import com.esflink.starter.annotation.FlinkSink;
 import com.esflink.starter.common.data.DataChangeInfo;
 import com.esflink.starter.common.data.FlinkJobSink;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * <p> 同步信息到 es </p>
@@ -11,8 +10,8 @@ import lombok.extern.slf4j.Slf4j;
  * @author zhouhongyin
  * @since 2023/6/9 17:11
  */
-@Slf4j
-@FlinkSink(value = "ourea", database = "ourea", table = "ourea.company")
+
+@FlinkSink(value = "test1", database = "test", table = "test.user,test.apartment")
 public class DemoSink implements FlinkJobSink {
 
 
@@ -28,7 +27,7 @@ public class DemoSink implements FlinkJobSink {
 
     @Override
     public void update(DataChangeInfo value, Context context) throws Exception {
-        log.info("DemoSink: {}", value.getAfterData());
+        System.out.println(value);
     }
 
     @Override

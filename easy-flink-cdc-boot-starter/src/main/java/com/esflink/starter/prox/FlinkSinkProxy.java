@@ -20,7 +20,7 @@ import java.lang.reflect.Method;
 public class FlinkSinkProxy implements InvocationHandler, Serializable {
 
     private final FlinkJobIdentity flinkJobIdentity;
-    Logger logger = LoggerFactory.getLogger(FlinkSinkProxy.class.getName());
+    Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     public FlinkSinkProxy(FlinkJobIdentity flinkJobIdentity) {
         this.flinkJobIdentity = flinkJobIdentity;
@@ -37,8 +37,7 @@ public class FlinkSinkProxy implements InvocationHandler, Serializable {
 
             logger.info("flinkJobIdentity: {}, dataChangeInfo: {}", flinkJobIdentity, dataChangeInfo);
         } catch (Exception e) {
-            logger.error("flinkJobIdentity: {}, dataChangeInfo: {}, error: {}", flinkJobIdentity, dataChangeInfo, e);
-            e.printStackTrace();
+            logger.error("An error occurred while post the flinkJob[flinkJobIdentity: " + flinkJobIdentity + "]!", e);
         }
         return null;
     }

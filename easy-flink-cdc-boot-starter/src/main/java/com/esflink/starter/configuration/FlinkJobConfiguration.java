@@ -123,6 +123,8 @@ public class FlinkJobConfiguration implements ApplicationContextAware, SmartInit
         MetaManager metaManager = FlinkJobBus.getMetaManager();
         LogPosition cursor = metaManager.getCursor(flinkJobIdentity);
         StartupOptions startupOptions = null;
+
+        // 有 cursor 信息，默认 TIMESTAMP 方式启动
         if (cursor != null) {
             startupOptions = StartupOptions.timestamp(cursor.getStartupTimestampMillis() + 1);
         }

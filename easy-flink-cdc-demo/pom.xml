@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>easy-flink-cdc</artifactId>
-        <groupId>io.github.maskvvv</groupId>
-        <version>1.0.1</version>
-    </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.6.13</version>
+        <relativePath/>
+    </parent>
+
     <artifactId>easy-flink-cdc-demo</artifactId>
+    <groupId>io.github.maskvvv</groupId>
+    <version>1.0.1</version>
     <description>easy-flink-cdc-demo</description>
     <name>easy-flink-cdc-demo</name>
 
@@ -18,53 +22,21 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spring-boot.version>2.6.13</spring-boot.version>
+        <easy-flink-cdc.version>1.0.1</easy-flink-cdc.version>
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>cn.easy-es</groupId>
-            <artifactId>easy-es-boot-starter</artifactId>
-            <version>1.1.1</version>
-        </dependency>
 
-
-        <dependency>
-            <groupId>com.lmax</groupId>
-            <artifactId>disruptor</artifactId>
-            <version>3.4.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.12</version>
-        </dependency>
         <dependency>
             <groupId>io.github.maskvvv</groupId>
             <artifactId>easy-flink-cdc-boot-starter</artifactId>
-            <version>${parent.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>spring-boot-starter-logging</artifactId>
-                    <groupId>org.springframework.boot</groupId>
-                </exclusion>
-            </exclusions>
+            <version>${easy-flink-cdc.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-log4j2</artifactId>
-        </dependency>
-
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <version>${spring-boot.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>spring-boot-starter-logging</artifactId>
-                    <groupId>org.springframework.boot</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
@@ -72,12 +44,6 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <version>${spring-boot.version}</version>
             <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>slf4j-api</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
     </dependencies>
 
