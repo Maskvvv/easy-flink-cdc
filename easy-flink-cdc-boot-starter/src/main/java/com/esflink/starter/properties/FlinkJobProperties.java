@@ -160,7 +160,7 @@ public class FlinkJobProperties {
     public StartupOptions getStartupOptions() {
         String startupMode = this.startupMode;
 
-        switch (startupMode) {
+        switch (startupMode.toUpperCase()) {
             case "INITIAL":
                 return StartupOptions.initial();
             case "TIMESTAMP":
