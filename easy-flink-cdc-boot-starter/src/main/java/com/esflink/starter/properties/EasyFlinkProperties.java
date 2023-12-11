@@ -90,7 +90,17 @@ public class EasyFlinkProperties implements Serializable {
     public static class Nacos {
         public static final String DEFAULT_GROUP = "DEFAULT_GROUP";
 
+        private String enable;
+
         private Position position;
+
+        public String getEnable() {
+            return enable;
+        }
+
+        public void setEnable(String enable) {
+            this.enable = enable;
+        }
 
         public Position getPosition() {
             return position;

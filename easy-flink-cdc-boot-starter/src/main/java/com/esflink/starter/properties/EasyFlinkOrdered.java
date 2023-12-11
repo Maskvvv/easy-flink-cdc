@@ -8,7 +8,8 @@ package com.esflink.starter.properties;
  */
 public interface EasyFlinkOrdered {
 
-    int PROPERTIES_CONFIG = 10;
+    int LOCAL_PROPERTIES_CONFIG = 10;
+    int NACOS_PROPERTIES_CONFIG = 11;
     int ZOOKEEPER = 20;
     int META_MANAGER = 30;
 

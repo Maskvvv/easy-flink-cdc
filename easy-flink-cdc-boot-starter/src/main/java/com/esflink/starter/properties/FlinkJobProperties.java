@@ -1,7 +1,7 @@
 package com.esflink.starter.properties;
 
 
-import com.esflink.starter.configuration.FlinkJobPropertiesConfiguration;
+import com.esflink.starter.configuration.FlinkJobLocalPropertiesConfiguration;
 import com.ververica.cdc.connectors.mysql.MySqlSource;
 import com.ververica.cdc.connectors.mysql.table.StartupMode;
 import com.ververica.cdc.connectors.mysql.table.StartupOptions;
@@ -10,7 +10,7 @@ import com.ververica.cdc.connectors.mysql.table.StartupOptions;
  * flink job 配置信息
  *
  * @author zhouhongyin
- * @see FlinkJobPropertiesConfiguration
+ * @see FlinkJobLocalPropertiesConfiguration
  * @since 2023/3/5 22:28
  */
 public class FlinkJobProperties {

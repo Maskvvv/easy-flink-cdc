@@ -1,6 +1,5 @@
 package com.esflink.demo.sink.oureahome;
 
-import com.esflink.starter.annotation.FlinkSink;
 import com.esflink.starter.common.data.DataChangeInfo;
 import com.esflink.starter.common.data.FlinkJobSink;
 
@@ -11,7 +10,7 @@ import com.esflink.starter.common.data.FlinkJobSink;
  * @since 2023/6/9 17:11
  */
 
-@FlinkSink(value = "ourea", database = "ourea", table = "ourea.company")
+//@FlinkSink(value = "ourea", database = "ourea", table = "ourea.company")
 public class OureaSink implements FlinkJobSink {
 
 
