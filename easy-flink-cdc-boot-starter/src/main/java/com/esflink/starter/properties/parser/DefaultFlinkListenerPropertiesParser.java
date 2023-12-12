@@ -25,11 +25,11 @@ public class DefaultFlinkListenerPropertiesParser extends AbstractFlinkListenerP
     public static final String NAME = "local";
 
     @Override
-    public List<FlinkJobProperties> getProperties(Resource resource) {
+    public List<FlinkJobProperties> parse(Resource resource) {
         try (InputStreamReader reader = new InputStreamReader(resource.getInputStream())) {
             Config config = ConfigFactory.parseReader(reader).resolve();
 
-            return parser(config);
+            return parse(config);
         } catch (Exception e) {
             throw new RuntimeException("FlinkPropertiesParser error to read config: " + resource, e);
         }
@@ -41,31 +41,36 @@ public class DefaultFlinkListenerPropertiesParser extends AbstractFlinkListenerP
      * @author zhouhongyin
      * @since 2023/5/23 17:37
      */
-    private List<FlinkJobProperties> parser(Config config) throws IllegalAccessException {
-        List<FlinkJobProperties> flinkJobPropertiesList = new ArrayList<>();
+    public List<FlinkJobProperties> parse(Config config) {
+        List<FlinkJobProperties> flinkJobPropertiesList = null;
+        try {
+            flinkJobPropertiesList = new ArrayList<>();
 
-        ConfigObject root = config.root();
-        for (Map.Entry<String, ConfigValue> rootEntry : root.entrySet()) {
-            String rootName = rootEntry.getKey();
-            Config properties = config.getConfig(rootName);
+            ConfigObject root = config.root();
+            for (Map.Entry<String, ConfigValue> rootEntry : root.entrySet()) {
+                String rootName = rootEntry.getKey();
+                Config properties = config.getConfig(rootName);
 
-            List<Field> flinkPropertiesFields = getFlinkPropertiesFields();
-            FlinkJobProperties flinkJobProperties = new FlinkJobProperties();
-            flinkJobProperties.setName(rootName);
-            for (Field filed : flinkPropertiesFields) {
-                String filedName = filed.getName();
-                String filedValue = "";
-                try {
-                    filedValue = properties.getString(filedName);
-                } catch (ConfigException.Missing exception) {
-                    continue;
+                List<Field> flinkPropertiesFields = getFlinkPropertiesFields();
+                FlinkJobProperties flinkJobProperties = new FlinkJobProperties();
+                flinkJobProperties.setName(rootName);
+                for (Field filed : flinkPropertiesFields) {
+                    String filedName = filed.getName();
+                    String filedValue = "";
+                    try {
+                        filedValue = properties.getString(filedName);
+                    } catch (ConfigException.Missing exception) {
+                        continue;
+                    }
+
+                    filed.setAccessible(true);
+                    filed.set(flinkJobProperties, filedValue);
                 }
 
-                filed.setAccessible(true);
-                filed.set(flinkJobProperties, filedValue);
+                flinkJobPropertiesList.add(flinkJobProperties);
             }
-
-            flinkJobPropertiesList.add(flinkJobProperties);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
         return flinkJobPropertiesList;
     }

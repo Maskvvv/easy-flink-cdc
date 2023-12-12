@@ -43,7 +43,7 @@ public class FlinkJobLocalPropertiesConfiguration implements BeanFactoryPostProc
         Resource resource = resourceLoader.getResource(BaseEsConstants.CONFIG_FILE);
         // 解析 conf resource 为 FlinkJobProperties
         FlinkListenerPropertiesParser flinkPropertiesParser = new DefaultFlinkListenerPropertiesParser();
-        List<FlinkJobProperties> flinkJobProperties = flinkPropertiesParser.getProperties(resource);
+        List<FlinkJobProperties> flinkJobProperties = flinkPropertiesParser.parse(resource);
 
         // 注册 FlinkJobProperties 到 FlinkJobPropertiesHolder
         FlinkJobPropertiesHolder.registerAllProperties(flinkJobProperties);

@@ -1,6 +1,7 @@
 package com.esflink.starter.properties.parser;
 
 import com.esflink.starter.properties.FlinkJobProperties;
+import com.typesafe.config.Config;
 import org.springframework.core.io.Resource;
 
 import java.util.List;
@@ -13,7 +14,13 @@ import java.util.List;
  */
 public interface FlinkListenerPropertiesParser {
 
-    List<FlinkJobProperties> getProperties(Resource resource);
+    default List<FlinkJobProperties> parse(Resource resource) {
+        throw new RuntimeException();
+    }
+
+    default List<FlinkJobProperties> parse(Config config) {
+        throw new RuntimeException();
+    }
 
     String getName();
 }

@@ -6,6 +6,8 @@ import com.ververica.cdc.connectors.mysql.MySqlSource;
 import com.ververica.cdc.connectors.mysql.table.StartupMode;
 import com.ververica.cdc.connectors.mysql.table.StartupOptions;
 
+import java.util.Objects;
+
 /**
  * flink job 配置信息
  *
@@ -168,5 +170,18 @@ public class FlinkJobProperties {
             default:
                 return StartupOptions.latest();
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof FlinkJobProperties)) return false;
+        FlinkJobProperties that = (FlinkJobProperties) o;
+        return Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }

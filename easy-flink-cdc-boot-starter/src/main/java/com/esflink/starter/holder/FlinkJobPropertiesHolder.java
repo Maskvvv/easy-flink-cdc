@@ -2,8 +2,10 @@ package com.esflink.starter.holder;
 
 import com.esflink.starter.properties.FlinkJobProperties;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * flinkJobPropertiesHolder
@@ -14,7 +16,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class FlinkJobPropertiesHolder {
     public static final String BEAN_NAME = "flinkJobPropertiesHolder";
 
-    private static final List<FlinkJobProperties> PROPERTIES = new CopyOnWriteArrayList<>();
+    private static final Set<FlinkJobProperties> PROPERTIES = new CopyOnWriteArraySet<>();
 
     public static void registerProperties(FlinkJobProperties properties) {
         PROPERTIES.add(properties);
@@ -25,7 +27,7 @@ public class FlinkJobPropertiesHolder {
     }
 
     public static List<FlinkJobProperties> getProperties() {
-        return PROPERTIES;
+        return new ArrayList<>(PROPERTIES);
     }
 
 }

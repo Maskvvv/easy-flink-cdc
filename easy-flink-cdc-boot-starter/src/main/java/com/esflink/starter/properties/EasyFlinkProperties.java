@@ -111,17 +111,8 @@ public class EasyFlinkProperties implements Serializable {
         }
 
         public static class Position {
-            private String key;
             private String dataId;
             private String group = DEFAULT_GROUP;
-
-            public String getKey() {
-                return key;
-            }
-
-            public void setKey(String key) {
-                this.key = key;
-            }
 
             public String getDataId() {
                 return dataId;
