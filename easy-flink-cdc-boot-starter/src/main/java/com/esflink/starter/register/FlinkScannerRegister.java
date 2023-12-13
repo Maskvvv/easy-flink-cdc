@@ -1,6 +1,7 @@
 package com.esflink.starter.register;
 
 import com.esflink.starter.annotation.EasyFlinkScan;
+import com.esflink.starter.common.utils.EEVersionUtils;
 import com.esflink.starter.properties.EasyFlinkProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.esflink.starter.constants.BaseEsConstants.ENABLE_PREFIX;
+import static com.esflink.starter.constants.BaseEsConstants.ENABLE_BANNER;
 
 /**
  * easy-flink 注册器
@@ -33,10 +34,23 @@ public class FlinkScannerRegister implements ImportBeanDefinitionRegistrar, Envi
 
     @Override
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
-        Boolean enable = Optional.ofNullable(environment.getProperty(ENABLE_PREFIX)).map(Boolean::parseBoolean).orElse(Boolean.TRUE);
-        if (!enable) {
-            logger.info("===> Easy-Flink is not enabled");
-            return;
+        boolean banner = Optional.ofNullable(environment.getProperty(ENABLE_BANNER)).map(Boolean::parseBoolean).orElse(Boolean.TRUE);
+        if (banner) {
+            String versionStr = EEVersionUtils.getJarVersion(this.getClass());
+            System.out.println("\n" +
+                    "\n" +
+                    " ______                  ______ _ _       _            _____ _____   _____ \n" +
+                    "|  ____|                |  ____| (_)     | |          / ____|  __ \\ / ____|\n" +
+                    "| |__   __ _ ___ _   _  | |__  | |_ _ __ | | ________| |    | |  | | |     \n" +
+                    "|  __| / _` / __| | | | |  __| | | | '_ \\| |/ /______| |    | |  | | |     \n" +
+                    "| |___| (_| \\__ \\ |_| | | |    | | | | | |   <       | |____| |__| | |____ \n" +
+                    "|______\\__,_|___/\\__, | |_|    |_|_|_| |_|_|\\_\\       \\_____|_____/ \\_____|\n" +
+                    "                  __/ |                                                    \n" +
+                    "                 |___/                                                     " +
+                    "\n------------------------------------------------------>"
+            );
+            System.out.println(":: version   :: " + versionStr);
+            System.out.println(":: home      :: https://github.com/Maskvvv/easy-flink-cdc");
         }
 
         AnnotationAttributes mapperScanAttrs = AnnotationAttributes

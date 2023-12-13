@@ -9,6 +9,8 @@ public class BaseEsConstants {
 
     public static final String ENABLE_PREFIX = PREFIX + ".enable";
 
+    public static final String ENABLE_BANNER = PREFIX + ".banner";
+
     public static final String ENABLE_NACOS = PREFIX + ".cloud-config.enable";
 
     public static final String CONFIG_FILE = PREFIX + ".conf";
@@ -17,5 +19,9 @@ public class BaseEsConstants {
 
     public static final String META_MODEL = PREFIX + ".meta-model";
 
+    /**
+     * 未知的版本号
+     */
+    public static final String UNKNOWN = "unknown";
 
 }
