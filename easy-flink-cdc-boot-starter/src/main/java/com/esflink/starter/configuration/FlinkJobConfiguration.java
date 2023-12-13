@@ -43,7 +43,7 @@ import java.util.Map;
  * @since 2023/5/23 15:33
  */
 @Configuration
-@ConditionalOnProperty(name = BaseEsConstants.ENABLE_PREFIX, havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(name = BaseEsConstants.ENABLE_PREFIX, havingValue = "true")
 public class FlinkJobConfiguration implements ApplicationContextAware, SmartInitializingSingleton, Ordered {
     Logger logger = LoggerFactory.getLogger(FlinkJobConfiguration.class.getName());
 
@@ -52,10 +52,15 @@ public class FlinkJobConfiguration implements ApplicationContextAware, SmartInit
     @Autowired
     private EasyFlinkProperties easyFlinkProperties;
 
+    @Autowired
+    private FlinkJobPropertiesHolder flinkJobPropertiesHolder;
+
     @Override
     public void afterSingletonsInstantiated() {
 
-        List<FlinkJobProperties> flinkJobProperties = FlinkJobPropertiesHolder.getProperties();
+        List<FlinkJobProperties> flinkJobProperties = flinkJobPropertiesHolder.getProperties();
+
+        logger.warn("no useable flink job under the application!");
 
         initSink();
 

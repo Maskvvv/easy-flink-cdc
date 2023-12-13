@@ -1,7 +1,8 @@
+org.springframework.cloud.bootstrap.BootstrapConfiguration=\
+  com.esflink.starter.configuration.FlinkJobNacosPropertiesConfiguration
 # Auto Configure
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.esflink.starter.configuration.FlinkJobLocalPropertiesConfiguration,\
-  com.esflink.starter.configuration.FlinkJobNacosPropertiesConfiguration,\
   com.esflink.starter.configuration.FlinkJobConfiguration,\
   com.esflink.starter.configuration.FlinkZookeeperConfiguration,\
   com.esflink.starter.configuration.MetaManagerConfiguration

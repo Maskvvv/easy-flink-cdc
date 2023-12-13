@@ -67,6 +67,9 @@ public class ZookeeperMixedMetaManager extends MemoryMetaManager implements Meta
     @Autowired
     private ZkClientx zkClientx;
 
+    @Autowired
+    private FlinkJobPropertiesHolder flinkJobPropertiesHolder;
+
     /**
      * <p>flinkJob zookeeper path map</p>
      */
@@ -120,7 +123,7 @@ public class ZookeeperMixedMetaManager extends MemoryMetaManager implements Meta
      */
     private void initIdentifyZKPathMap() {
         identifyZKPathMap = new ConcurrentHashMap<>();
-        List<FlinkJobProperties> properties = FlinkJobPropertiesHolder.getProperties();
+        List<FlinkJobProperties> properties = flinkJobPropertiesHolder.getProperties();
         if (CollectionUtils.isEmpty(properties)) return;
 
         for (FlinkJobProperties property : properties) {

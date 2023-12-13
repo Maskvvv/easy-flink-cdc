@@ -26,7 +26,7 @@ import java.util.ServiceLoader;
  */
 @EnableConfigurationProperties(EasyFlinkProperties.class)
 @Configuration
-@ConditionalOnProperty(name = BaseEsConstants.ENABLE_PREFIX, havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(name = BaseEsConstants.ENABLE_PREFIX, havingValue = "true")
 public class MetaManagerConfiguration implements Ordered {
 
     public static final String SEPARATOR = File.separator;

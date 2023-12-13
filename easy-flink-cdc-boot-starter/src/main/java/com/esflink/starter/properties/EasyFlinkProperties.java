@@ -29,7 +29,7 @@ import java.io.Serializable;
 public class EasyFlinkProperties implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(EasyFlinkProperties.class);
 
-    private String enable;
+    private boolean enable;
 
     private Nacos cloudConfig;
 
@@ -90,15 +90,15 @@ public class EasyFlinkProperties implements Serializable {
     public static class Nacos {
         public static final String DEFAULT_GROUP = "DEFAULT_GROUP";
 
-        private String enable;
+        private boolean enable;
 
         private Position position;
 
-        public String getEnable() {
+        public boolean isEnable() {
             return enable;
         }
 
-        public void setEnable(String enable) {
+        public void setEnable(boolean enable) {
             this.enable = enable;
         }
 
@@ -186,11 +186,11 @@ public class EasyFlinkProperties implements Serializable {
         this.zookeeper = zookeeper;
     }
 
-    public String getEnable() {
+    public boolean isEnable() {
         return enable;
     }
 
-    public void setEnable(String enable) {
+    public void setEnable(boolean enable) {
         this.enable = enable;
     }
 

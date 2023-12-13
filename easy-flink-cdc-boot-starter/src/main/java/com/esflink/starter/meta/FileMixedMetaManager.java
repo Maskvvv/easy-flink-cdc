@@ -71,6 +71,9 @@ public class FileMixedMetaManager extends MemoryMetaManager implements MetaManag
     @Autowired
     private EasyFlinkProperties easyFlinkProperties;
 
+    @Autowired
+    private FlinkJobPropertiesHolder flinkJobPropertiesHolder;
+
     /**
      * 游标文件存放路径
      */
@@ -147,7 +150,7 @@ public class FileMixedMetaManager extends MemoryMetaManager implements MetaManag
      */
     private void initDataFileCaches() {
         dataFileCaches = new ConcurrentHashMap<>();
-        List<FlinkJobProperties> properties = FlinkJobPropertiesHolder.getProperties();
+        List<FlinkJobProperties> properties = flinkJobPropertiesHolder.getProperties();
         if (CollectionUtils.isEmpty(properties)) return;
 
         for (FlinkJobProperties property : properties) {

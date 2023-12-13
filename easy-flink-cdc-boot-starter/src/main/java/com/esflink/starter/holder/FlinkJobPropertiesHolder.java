@@ -16,17 +16,28 @@ import java.util.concurrent.CopyOnWriteArraySet;
 public class FlinkJobPropertiesHolder {
     public static final String BEAN_NAME = "flinkJobPropertiesHolder";
 
-    private static final Set<FlinkJobProperties> PROPERTIES = new CopyOnWriteArraySet<>();
+    public static final FlinkJobPropertiesHolder EMPTY = new FlinkJobPropertiesHolder();
 
-    public static void registerProperties(FlinkJobProperties properties) {
+    private final Set<FlinkJobProperties> PROPERTIES = new CopyOnWriteArraySet<>();
+
+    public void register(FlinkJobProperties properties) {
         PROPERTIES.add(properties);
     }
 
-    public static void registerAllProperties(List<FlinkJobProperties> properties) {
+    public void registerAll(List<FlinkJobProperties> properties) {
         PROPERTIES.addAll(properties);
     }
 
-    public static List<FlinkJobProperties> getProperties() {
+    public synchronized void registerAllIfNotAbsent(List<FlinkJobProperties> properties) {
+        for (FlinkJobProperties property : properties) {
+            if (PROPERTIES.contains(property)) {
+                continue;
+            }
+            PROPERTIES.add(property);
+        }
+    }
+
+    public List<FlinkJobProperties> getProperties() {
         return new ArrayList<>(PROPERTIES);
     }
 

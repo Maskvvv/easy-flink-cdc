@@ -11,7 +11,7 @@ import com.esflink.starter.common.data.FlinkJobSink;
  * @since 2023/6/9 17:11
  */
 
-@FlinkSink(value = "test1", database = "test", table = "test.user,test.apartment")
+@FlinkSink(value = "test1", database = "test", table = {"test.user", "test.apartment"})
 public class DemoSink implements FlinkJobSink {
 
 

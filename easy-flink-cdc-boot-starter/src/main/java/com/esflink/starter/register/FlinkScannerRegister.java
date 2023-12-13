@@ -2,7 +2,6 @@ package com.esflink.starter.register;
 
 import com.esflink.starter.annotation.EasyFlinkScan;
 import com.esflink.starter.common.utils.EEVersionUtils;
-import com.esflink.starter.properties.EasyFlinkProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -20,6 +19,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.esflink.starter.constants.BaseEsConstants.ENABLE_BANNER;
+import static com.esflink.starter.constants.BaseEsConstants.ENABLE_PREFIX;
 
 /**
  * easy-flink 注册器
@@ -28,12 +28,19 @@ import static com.esflink.starter.constants.BaseEsConstants.ENABLE_BANNER;
  * @since 2023/5/23 11:12
  */
 public class FlinkScannerRegister implements ImportBeanDefinitionRegistrar, EnvironmentAware {
-    private static final Logger logger = LoggerFactory.getLogger(EasyFlinkProperties.class);
+    private static final Logger logger = LoggerFactory.getLogger(FlinkScannerRegister.class);
 
     private Environment environment;
 
     @Override
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
+        Boolean enable = Optional.ofNullable(environment.getProperty(ENABLE_PREFIX)).map(Boolean::parseBoolean).orElse(Boolean.TRUE);
+        if (!enable) {
+            logger.info("===> Easy Flink-CDC is not enabled");
+            return;
+        }
+
+
         boolean banner = Optional.ofNullable(environment.getProperty(ENABLE_BANNER)).map(Boolean::parseBoolean).orElse(Boolean.TRUE);
         if (banner) {
             String versionStr = EEVersionUtils.getJarVersion(this.getClass());
