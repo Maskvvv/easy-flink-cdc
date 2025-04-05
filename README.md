@@ -78,6 +78,7 @@ ourea = {
     username = "root"
     password = "1234567788"
     startupMode = "INITIAL"
+    dbType = "MSSQL"
 }
 
 athena = {
@@ -89,6 +90,7 @@ athena = {
     username = "root"
     password = "1234567788"
     startupMode = "INITIAL"
+    dbType = "MYSQL"
 }
 ```
 
@@ -102,7 +104,10 @@ athena = {
 - startupMode：启动方式，如果有 **cursor** 存在，以 **cursor** 中优先。
   - INITIAL: 初始化快照，即全量导入后增量导入(检测更新数据写入)
   - LATEST: 只进行增量导入(不读取历史变化)
-  - TIMESTAMP: 指定时间戳进行数据导入(大于等于指定时间错读取数据)
+  - TIMESTAMP: 指定时间戳进行数据导入(大于等于指定时间错读取数据) PS: 在MSSQL中该配置无效
+- dbType: 数据库类型
+  - MSSQL sqlserver数据库
+  - MYSQL mysql数据库
 
 ## 启用 easy-flink-cdc
 

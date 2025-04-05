@@ -3,15 +3,23 @@ package com.esflink.starter.common.data;
 import com.alibaba.fastjson.JSONObject;
 import com.esflink.starter.common.data.DataChangeInfo.EventType;
 import com.google.common.base.CaseFormat;
-import com.ververica.cdc.debezium.DebeziumDeserializationSchema;
 import io.debezium.data.Envelope;
+import io.debezium.time.MicroTimestamp;
+import io.debezium.time.NanoTimestamp;
+import io.debezium.time.Timestamp;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
+import org.apache.flink.cdc.debezium.DebeziumDeserializationSchema;
+import org.apache.flink.cdc.debezium.utils.TemporalConversions;
+import org.apache.flink.table.data.TimestampData;
 import org.apache.flink.util.Collector;
 import org.apache.kafka.connect.data.Field;
 import org.apache.kafka.connect.data.Schema;
 import org.apache.kafka.connect.data.Struct;
 import org.apache.kafka.connect.source.SourceRecord;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -91,12 +99,45 @@ public class MysqlDeserialization implements DebeziumDeserializationSchema<DataC
         if (element != null) {
             Schema afterSchema = element.schema();
             List<Field> fieldList = afterSchema.fields();
+//            for (Field field : fieldList) {
+//                Object afterValue = element.get(field);
+//                jsonObject.put(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, field.name()), afterValue);
+//            }
             for (Field field : fieldList) {
                 Object afterValue = element.get(field);
-                jsonObject.put(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, field.name()), afterValue);
+                if (Arrays.asList(Timestamp.SCHEMA_NAME, MicroTimestamp.SCHEMA_NAME, NanoTimestamp.SCHEMA_NAME).contains(field.schema().name())) {
+                    TimestampData rowTime = convertToTimestamp(afterValue, field.schema());
+                    if (rowTime != null) {
+                        jsonObject.put(field.name(), rowTime.toLocalDateTime());
+                    } else {
+                        jsonObject.put(field.name(), afterValue);
+                    }
+                } else {
+                    jsonObject.put(field.name(), afterValue);
+                }
             }
         }
         return jsonObject;
+    }
+
+    private TimestampData convertToTimestamp(Object dbzObj, Schema schema) {
+        if (dbzObj == null) {
+            return null;
+        }
+        if (dbzObj instanceof Long) {
+            switch (schema.name()) {
+                case Timestamp.SCHEMA_NAME:
+                    return TimestampData.fromEpochMillis((Long) dbzObj);
+                case MicroTimestamp.SCHEMA_NAME:
+                    long micro = (long) dbzObj;
+                    return TimestampData.fromEpochMillis(micro / 1000, (int) (micro % 1000 * 1000));
+                case NanoTimestamp.SCHEMA_NAME:
+                    long nano = (long) dbzObj;
+                    return TimestampData.fromEpochMillis(nano / 1000_000, (int) (nano % 1000_000));
+            }
+        }
+        LocalDateTime localDateTime = TemporalConversions.toLocalDateTime(dbzObj, ZoneOffset.of("Asia/Shanghai"));
+        return TimestampData.fromLocalDateTime(localDateTime);
     }
 
 

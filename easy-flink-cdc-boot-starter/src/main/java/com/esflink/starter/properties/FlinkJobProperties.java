@@ -2,9 +2,6 @@ package com.esflink.starter.properties;
 
 
 import com.esflink.starter.configuration.FlinkJobPropertiesConfiguration;
-import com.ververica.cdc.connectors.mysql.MySqlSource;
-import com.ververica.cdc.connectors.mysql.table.StartupMode;
-import com.ververica.cdc.connectors.mysql.table.StartupOptions;
 
 /**
  * flink job 配置信息
@@ -19,6 +16,11 @@ public class FlinkJobProperties {
     private String hostname;
 
     private String port;
+
+    /**
+     * 数据库类型：MSSQL、MYSQL
+     */
+    private String dbType;
 
     /**
      * <p>数据库名</p>
@@ -157,16 +159,36 @@ public class FlinkJobProperties {
         this.serverId = serverId;
     }
 
-    public StartupOptions getStartupOptions() {
+    public String getDbType() {
+        return dbType;
+    }
+
+    public void setDbType(String dbType) {
+        this.dbType = dbType;
+    }
+
+    public org.apache.flink.cdc.connectors.mysql.table.StartupOptions getMysqlStartupOptions() {
         String startupMode = this.startupMode;
 
         switch (startupMode.toUpperCase()) {
             case "INITIAL":
-                return StartupOptions.initial();
+                return org.apache.flink.cdc.connectors.mysql.table.StartupOptions.initial();
             case "TIMESTAMP":
-                return StartupOptions.timestamp(startupTimestampMillis);
+                return org.apache.flink.cdc.connectors.mysql.table.StartupOptions.timestamp(startupTimestampMillis);
             default:
-                return StartupOptions.latest();
+                return org.apache.flink.cdc.connectors.mysql.table.StartupOptions.latest();
+        }
+    }
+
+    public org.apache.flink.cdc.connectors.base.options.StartupOptions getMssqlStartupOptions() {
+        String startupMode = this.startupMode;
+
+        switch (startupMode.toUpperCase()) {
+            case "INITIAL":
+                return org.apache.flink.cdc.connectors.base.options.StartupOptions.initial();
+            case "LATEST":
+            default:
+                return org.apache.flink.cdc.connectors.base.options.StartupOptions.latest();
         }
     }
 }

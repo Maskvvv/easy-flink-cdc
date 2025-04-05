@@ -1,7 +1,5 @@
 package com.esflink.starter.meta;
 
-import com.ververica.cdc.connectors.mysql.table.StartupOptions;
-
 import java.io.Serializable;
 
 /**

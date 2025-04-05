@@ -11,7 +11,6 @@
     <modules>
         <module>easy-flink-cdc-boot-starter</module>
         <module>easy-flink-cdc-demo</module>
-        <module>easy-flink-cdc-core</module>
     </modules>
 
     <name>easy-flink-cdc</name>

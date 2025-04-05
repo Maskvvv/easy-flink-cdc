@@ -1,13 +1,15 @@
 package com.esflink.starter.common.data;
 
 
+import java.io.Serializable;
+
 /**
  * 数据变更对象
  *
  * @author zhouhongyin
  * @since 2023/3/5 22:23
  */
-public class DataChangeInfo {
+public class DataChangeInfo implements Serializable {
     /**
      * 变更前数据
      */

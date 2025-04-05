@@ -23,7 +23,7 @@ public class FlinkJobSinkDatabaseFilter implements FlinkJobSinkFilter {
 
         // 过滤数据库
         for (String database : databases) {
-            if (database.equals(dataChangeInfo.getDatabase())) {
+            if (database.equals(dataChangeInfo.getDatabase()) || dataChangeInfo.getDatabase().equalsIgnoreCase("dbo")) {
                 return FlinkJobSinkTableFilter.filter(sink, dataChangeInfo);
             }
 

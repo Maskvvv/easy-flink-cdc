@@ -3,6 +3,7 @@ package com.esflink.starter.configuration;
 import com.esflink.starter.annotation.FlinkSink;
 import com.esflink.starter.common.data.DataChangeInfo;
 import com.esflink.starter.common.data.FlinkJobSink;
+import com.esflink.starter.common.data.MssqlDeserialization;
 import com.esflink.starter.common.data.MysqlDeserialization;
 import com.esflink.starter.constants.BaseEsConstants;
 import com.esflink.starter.holder.FlinkJobBus;
@@ -15,9 +16,10 @@ import com.esflink.starter.properties.EasyFlinkOrdered;
 import com.esflink.starter.properties.EasyFlinkProperties;
 import com.esflink.starter.properties.FlinkJobProperties;
 import com.esflink.starter.prox.FlinkSinkProxy;
-import com.ververica.cdc.connectors.mysql.MySqlSource;
-import com.ververica.cdc.connectors.mysql.table.StartupOptions;
-import com.ververica.cdc.debezium.DebeziumSourceFunction;
+import org.apache.flink.api.common.eventtime.WatermarkStrategy;
+import org.apache.flink.cdc.connectors.mysql.source.MySqlSource;
+import org.apache.flink.cdc.connectors.mysql.table.StartupOptions;
+import org.apache.flink.cdc.connectors.sqlserver.source.SqlServerSourceBuilder;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.slf4j.Logger;
@@ -99,12 +101,19 @@ public class FlinkJobConfiguration implements ApplicationContextAware, SmartInit
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(1);
-
-        DebeziumSourceFunction<DataChangeInfo> dataChangeInfoMySqlSource = buildDataChangeSource(flinkProperty, flinkJobIdentity);
-        DataStream<DataChangeInfo> streamSource = env
-                .addSource(dataChangeInfoMySqlSource)
-                .setParallelism(1);
-
+        DataStream<DataChangeInfo> streamSource = null;
+        if ("MYSQL".equalsIgnoreCase(flinkProperty.getDbType())) {
+            MySqlSource<DataChangeInfo> dataChangeInfoMySqlSource = buildMysqlDataChangeSource(flinkProperty, flinkJobIdentity);
+            streamSource = env
+                    .fromSource(dataChangeInfoMySqlSource, WatermarkStrategy.noWatermarks(), "MYSQLIncrementalSource")
+                    .setParallelism(1);
+        }
+        if ("MSSQL".equalsIgnoreCase(flinkProperty.getDbType())) {
+            SqlServerSourceBuilder.SqlServerIncrementalSource<DataChangeInfo> dataChangeInfoMySqlSource = buildMssqlDataChangeSource(flinkProperty, flinkJobIdentity);
+            streamSource = env
+                    .fromSource(dataChangeInfoMySqlSource, WatermarkStrategy.noWatermarks(), "MSSQLIncrementalSource")
+                    .setParallelism(1);
+        }
         FlinkJobSink sinkProxyInstance = (FlinkJobSink) Proxy.newProxyInstance(
                 FlinkJobSink.class.getClassLoader(),
                 new Class<?>[]{FlinkJobSink.class},
@@ -117,13 +126,13 @@ public class FlinkJobConfiguration implements ApplicationContextAware, SmartInit
     }
 
     /**
-     * 构造变更数据源
+     * 构造MYSQL变更数据源
      */
-    private DebeziumSourceFunction<DataChangeInfo> buildDataChangeSource(FlinkJobProperties flinkJobProperties, FlinkJobIdentity flinkJobIdentity) {
+    private MySqlSource<DataChangeInfo> buildMysqlDataChangeSource(FlinkJobProperties flinkJobProperties, FlinkJobIdentity flinkJobIdentity) {
         MetaManager metaManager = FlinkJobBus.getMetaManager();
         LogPosition cursor = metaManager.getCursor(flinkJobIdentity);
-        StartupOptions startupOptions = null;
 
+        StartupOptions startupOptions = null;
         // 有 cursor 信息，默认 TIMESTAMP 方式启动
         if (cursor != null) {
             startupOptions = StartupOptions.timestamp(cursor.getStartupTimestampMillis() + 1);
@@ -132,18 +141,42 @@ public class FlinkJobConfiguration implements ApplicationContextAware, SmartInit
         return MySqlSource.<DataChangeInfo>builder()
                 .hostname(flinkJobProperties.getHostname())
                 .port(Integer.parseInt(flinkJobProperties.getPort()))
-                .databaseList(flinkJobProperties.getDatabaseList())
+                .databaseList(flinkJobProperties.getDatabaseList().split(","))
                 .tableList(flinkJobProperties.getTableList())
                 .username(flinkJobProperties.getUsername())
                 .password(flinkJobProperties.getPassword())
-                //.serverId(flinkJobProperties.getServerId())
-
                 /*initial初始化快照,即全量导入后增量导入(检测更新数据写入)
                  * latest:只进行增量导入(不读取历史变化)
                  * timestamp:指定时间戳进行数据导入(大于等于指定时间错读取数据)
                  */
-                .startupOptions(startupOptions != null ? startupOptions : flinkJobProperties.getStartupOptions())
+                .startupOptions(startupOptions != null ? startupOptions : flinkJobProperties.getMysqlStartupOptions())
                 .deserializer(new MysqlDeserialization())
+                .serverTimeZone(flinkJobProperties.getServerTimeZone())
+                .build();
+    }
+
+    /**
+     * 构造MSSQL变更数据源
+     */
+    private SqlServerSourceBuilder.SqlServerIncrementalSource<DataChangeInfo> buildMssqlDataChangeSource(FlinkJobProperties flinkJobProperties, FlinkJobIdentity flinkJobIdentity) {
+        /*MetaManager metaManager = FlinkJobBus.getMetaManager();
+        LogPosition cursor = metaManager.getCursor(flinkJobIdentity);
+        org.apache.flink.cdc.connectors.base.options.StartupOptions startupOptions = null;
+        // 有 cursor 信息，默认 TIMESTAMP 方式启动
+        if (cursor != null) {
+            startupOptions = org.apache.flink.cdc.connectors.base.options.StartupOptions.timestamp(cursor.getStartupTimestampMillis() + 1);
+        }*/
+
+        return SqlServerSourceBuilder.SqlServerIncrementalSource.<DataChangeInfo>builder()
+                .hostname(flinkJobProperties.getHostname())
+                .port(Integer.parseInt(flinkJobProperties.getPort()))
+                .databaseList(flinkJobProperties.getDatabaseList().split(","))
+                .tableList(flinkJobProperties.getTableList())
+                .username(flinkJobProperties.getUsername())
+                .password(flinkJobProperties.getPassword())
+                .deserializer(new MssqlDeserialization())
+//                .startupOptions(startupOptions != null ? startupOptions : flinkJobProperties.getMssqlStartupOptions())
+                .startupOptions(flinkJobProperties.getMssqlStartupOptions()) //MSSQL仅支持 初始化和latest 方式
                 .serverTimeZone(flinkJobProperties.getServerTimeZone())
                 .build();
     }

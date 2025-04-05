@@ -27,6 +27,9 @@ public class FlinkJobSinkTableFilter implements FlinkJobSinkFilter {
         for (String tableName : tableNames) {
             String[] split = tableName.split("\\.");
 
+            if(dataChangeInfoDatabase.equalsIgnoreCase("dbo")){
+                dataChangeInfoDatabase = "dbo";
+            }
             if (dataChangeInfoDatabase.equals(split[0])) {
                 if ("*".equals(split[1]) || dataChangeInfoTableName.equals(split[1])) {
                     return true;
