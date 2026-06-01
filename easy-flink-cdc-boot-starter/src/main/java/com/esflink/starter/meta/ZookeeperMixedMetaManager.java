@@ -16,8 +16,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.io.Serializable;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +56,6 @@ import java.util.concurrent.TimeUnit;
 public class ZookeeperMixedMetaManager extends MemoryMetaManager implements MetaManager, Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(ZookeeperMixedMetaManager.class);
-    private static final Charset charset = StandardCharsets.UTF_8;
     public static final String NAME = "zookeeper";
 
     @Autowired
@@ -100,7 +97,7 @@ public class ZookeeperMixedMetaManager extends MemoryMetaManager implements Meta
                             // 定时将内存中的最新值刷到file中，多次变更只刷一次
                             flushDataToZookeeper(flinkJobIdentity);
                         } catch (Throwable e) {
-                            logger.error("period update [{}] curosr failed!", flinkJobIdentity, e);
+                            logger.error("period update [{}] cursor failed!", flinkJobIdentity, e);
                         }
                     }
                 },

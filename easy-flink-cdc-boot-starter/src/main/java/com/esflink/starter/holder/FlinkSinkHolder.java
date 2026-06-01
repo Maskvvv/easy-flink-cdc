@@ -3,10 +3,10 @@ package com.esflink.starter.holder;
 import com.esflink.starter.annotation.FlinkSink;
 import com.esflink.starter.common.data.FlinkJobSink;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * FlinkSink 工厂
@@ -21,9 +21,7 @@ public class FlinkSinkHolder {
 
     public static void registerSink(FlinkJobSink sink, FlinkSink flinkSink) {
         String value = flinkSink.value();
-        List<FlinkJobSink> sinkList = SINK_MAP.getOrDefault(value, new ArrayList<>());
-        sinkList.add(sink);
-        SINK_MAP.put(value, sinkList);
+        SINK_MAP.computeIfAbsent(value, key -> new CopyOnWriteArrayList<>()).add(sink);
     }
 
     public static List<FlinkJobSink> getSink(String flinkJobName) {

@@ -65,8 +65,11 @@ import java.util.concurrent.TimeUnit;
 public class FileMixedMetaManager extends MemoryMetaManager implements MetaManager, Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(FileMixedMetaManager.class);
-    private static final Charset charset = StandardCharsets.UTF_8;
-    private final String NAME = "file";
+    private static final Charset CHARSET = StandardCharsets.UTF_8;
+    private static final String NAME = "file";
+    private static final String DATA_FILE_PREFIX = "easy-flink-cdc";
+    private static final String DATA_FILE_NAME = "meta.dat";
+    private static final String DATA_DIR_PATTERN = "/**/meta.dat";
 
     @Autowired
     private EasyFlinkProperties easyFlinkProperties;
@@ -75,9 +78,6 @@ public class FileMixedMetaManager extends MemoryMetaManager implements MetaManag
      * 游标文件存放路径
      */
     private File dataDir;
-    private String dataFilePrefix = "easy-flink-cdc";
-    private String dataFileName = "meta.dat";
-    private static final String dataDirEndsWith = "/**/meta.dat";
 
     /**
      * flinkJob 游标文件map
@@ -127,7 +127,7 @@ public class FileMixedMetaManager extends MemoryMetaManager implements MetaManag
                             // 定时将内存中的最新值刷到file中，多次变更只刷一次
                             flushDataToFile(flinkJobIdentity);
                         } catch (Throwable e) {
-                            logger.error("period update [{}] curosr failed!", flinkJobIdentity, e);
+                            logger.error("period update [{}] cursor failed!", flinkJobIdentity, e);
                         }
                     }
                 },
@@ -153,8 +153,7 @@ public class FileMixedMetaManager extends MemoryMetaManager implements MetaManag
         for (FlinkJobProperties property : properties) {
             EasyFlinkProperties.Meta meta = easyFlinkProperties.getMeta();
             FlinkJobIdentity flinkJobIdentity = FlinkJobIdentity.generate(meta, property.getName());
-            File file = new File(dataDir, File.separator + flinkJobIdentity.getApplicationName() + flinkJobIdentity.getPort() + File.separator + flinkJobIdentity.getFlinkJobName() + File.separator + dataFileName);
-            dataFileCaches.put(flinkJobIdentity, file);
+            dataFileCaches.put(flinkJobIdentity, buildDataFile(flinkJobIdentity));
         }
     }
 
@@ -177,7 +176,7 @@ public class FileMixedMetaManager extends MemoryMetaManager implements MetaManag
      * @param flinkJobIdentity FlinkJob 唯一标识
      */
     private void flushDataToFile(FlinkJobIdentity flinkJobIdentity) {
-        flushDataToFile(flinkJobIdentity, dataFileCaches.get(flinkJobIdentity));
+        flushDataToFile(flinkJobIdentity, dataFileCaches.computeIfAbsent(flinkJobIdentity, this::buildDataFile));
     }
 
     private void flushDataToFile(FlinkJobIdentity flinkJobIdentity, File dataFile) {
@@ -185,7 +184,8 @@ public class FileMixedMetaManager extends MemoryMetaManager implements MetaManag
         LogPosition logPosition = this.cursors.get(flinkJobIdentity);
         String json = JSON.toJSONString(logPosition);
         try {
-            FileUtils.writeStringToFile(dataFile, json, charset);
+            FileUtils.forceMkdirParent(dataFile);
+            FileUtils.writeStringToFile(dataFile, json, CHARSET);
         } catch (IOException e) {
             throw new MetaManagerException(e);
         }
@@ -200,7 +200,7 @@ public class FileMixedMetaManager extends MemoryMetaManager implements MetaManag
     private void loadCursor() {
         PathMatchingResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver(new FileSystemResourceLoader());
         try {
-            Resource[] resources = resourcePatternResolver.getResources("file:" + dataDir.getPath() + dataDirEndsWith);
+            Resource[] resources = resourcePatternResolver.getResources("file:" + dataDir.getPath() + DATA_DIR_PATTERN);
             if (ObjectUtils.isEmpty(resources)) return;
 
             for (Resource resource : resources) {
@@ -225,12 +225,17 @@ public class FileMixedMetaManager extends MemoryMetaManager implements MetaManag
             }
         }
 
-        return new File(destinationMetaDir, dataFileName);
+        return new File(destinationMetaDir, DATA_FILE_NAME);
     }
 
+    private File buildDataFile(FlinkJobIdentity flinkJobIdentity) {
+        File applicationDir = new File(dataDir, flinkJobIdentity.getApplicationName() + flinkJobIdentity.getPort());
+        File flinkJobDir = new File(applicationDir, flinkJobIdentity.getFlinkJobName());
+        return new File(flinkJobDir, DATA_FILE_NAME);
+    }
 
     public void setDataDir(String dataDir) {
-        dataDir = dataDir + File.separator + dataFilePrefix;
+        dataDir = dataDir + File.separator + DATA_FILE_PREFIX;
         this.dataDir = new File(dataDir);
     }
 
