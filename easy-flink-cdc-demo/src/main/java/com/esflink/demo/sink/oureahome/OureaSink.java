@@ -3,6 +3,8 @@ package com.esflink.demo.sink.oureahome;
 import com.esflink.starter.annotation.FlinkSink;
 import com.esflink.starter.common.data.DataChangeInfo;
 import com.esflink.starter.common.data.FlinkJobSink;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p> 同步信息到 es </p>
@@ -14,6 +16,7 @@ import com.esflink.starter.common.data.FlinkJobSink;
 @FlinkSink(value = "ourea", database = "ourea", table = "ourea.company")
 public class OureaSink implements FlinkJobSink {
 
+    private static final Logger logger = LoggerFactory.getLogger(OureaSink.class);
 
     @Override
     public void invoke(DataChangeInfo value, Context context) throws Exception {
@@ -27,7 +30,7 @@ public class OureaSink implements FlinkJobSink {
 
     @Override
     public void update(DataChangeInfo value, Context context) throws Exception {
-        System.out.println(value);
+        logger.info("receive update data: {}", value);
     }
 
     @Override
