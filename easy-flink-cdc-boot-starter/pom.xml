@@ -47,7 +47,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-clients_2.12</artifactId>
+            <artifactId>flink-clients_${scala.version}</artifactId>
             <version>${flink.version}</version>
             <exclusions>
                 <exclusion>
@@ -69,7 +69,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-streaming-java_2.12</artifactId>
+            <artifactId>flink-streaming-java_${scala.version}</artifactId>
             <version>${flink.version}</version>
             <exclusions>
                 <exclusion>
@@ -77,6 +77,11 @@
                     <groupId>org.slf4j</groupId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-table-planner-blink_${scala.version}</artifactId>
+            <version>${flink.version}</version>
         </dependency>
         <!--mysql -cdc-->
         <dependency>
